@@ -841,12 +841,27 @@ function computeAxes(){
 
 /* ===================== タイプ判定 ===================== */
 function pickType(ax){
-  const ei = ax.EI >= 0 ? 'E' : 'I';
-  const ns = ax.NS >= 0 ? 'N' : 'S';
-  const tf = ax.TF >= 0 ? 'T' : 'F';
-  const jp = ax.JP >= 0 ? 'J' : 'P';
+  function decideAxis(value, pos, neg){
+    if(value > 1) return pos;      // 明確にプラス寄り
+    else if(value < -1) return neg; // 明確にマイナス寄り
+    else return null;              // 中間ゾーン
+  }
 
-  const mbtiKey = ei + ns + tf + jp;
+  const ei = decideAxis(ax.EI, 'E', 'I');
+  const ns = decideAxis(ax.NS, 'N', 'S');
+  const tf = decideAxis(ax.TF, 'T', 'F');
+  const jp = decideAxis(ax.JP, 'J', 'P');
+
+  // MBTIキーを組み立てる（中間は仮で最頻出に寄せる or "X"にする）
+  let mbtiKey = 
+    (ei || 'X') + 
+    (ns || 'X') + 
+    (tf || 'X') + 
+    (jp || 'X');
+
+  // 中間ゾーンがある場合の処理
+  // → ここでは便宜的に "X" を無視して最寄りのMBTIに寄せる簡易方式
+  mbtiKey = mbtiKey.replace(/X/g,'N'); // デフォルトはN寄り（調整可）
 
   // MBTI → ソシオニクス対応表
   const map = {
@@ -863,6 +878,7 @@ function pickType(ax){
   const tKey = map[mbtiKey] || 'IEE';
   return tKey;
 }
+
 
 /* ===================== 進捗更新 ===================== */
 function updateProgress(){
@@ -930,3 +946,4 @@ document.addEventListener('DOMContentLoaded', init);
 </body>
 
 </html>
+
