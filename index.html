@@ -186,7 +186,6 @@ const Q60 = [
   {id:'q59', text:'新しいことに挑戦して刺激を求める。', axis:'Ne', polarity:+1},
   {id:'q60', text:'一つの未来像に集中して考え込む。', axis:'Ni', polarity:+1},
 ];
-<script>
 /* ===================== タイプ定義 ===================== */
 const TYPES = {
   IEE:{name:'アイデア冒険家', cluster:'アイデアマン型', perspective:'アイデア視点', quadra:'Delta'},
@@ -538,12 +537,11 @@ function computeAxes() {
       const w = WEIGHTS.functions;
       func[q.axis] += val * q.polarity * w;
       counts[q.axis] += w;
-    } else if (q.axis === 'S') {
-      // 互換: Q60の一部で axis:'S' を使用（具体重視）
-      const w = WEIGHTS.NS;
-      ax.NS += val * q.polarity * w; // Sは+方向だが、NS軸の+はN。よってSは反転させる
-      counts.NS += w;
-    }
+} else if (q.axis === 'S') {
+  const w = WEIGHTS.NS;
+  ax.NS -= val * q.polarity * w;  // ← マイナスで積む
+  counts.NS += w;
+}
   });
 
   // 正規化
@@ -782,6 +780,7 @@ function init() {
 
 document.addEventListener('DOMContentLoaded', init);
 </script>
+
 
 
 
