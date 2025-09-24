@@ -313,24 +313,136 @@ const TYPES = {
   SLI:{name:'マイペース職人', cluster:'守り役型', perspective:'調和視点', quadra:'Delta'},
 };
 
-/* ===================== 相性定義 ===================== */
+/* ===================== 相性定義（詳細付き・全16タイプ） ===================== */
 const REL = {
-  IEE:{dual:'マイペース職人', same:['段取りマネージャー','お人好し仲裁役'], conflict:'ルール番長'},
-  IEI:{dual:'ゴーゴー行動派', same:['ドラマティック演出家','ルール番長'], conflict:'段取りマネージャー'},
-  EIE:{dual:'ルール番長', same:['夢見る共感者','ゴーゴー行動派'], conflict:'マイペース職人'},
-  EII:{dual:'カリスマ配信者', same:['段取りマネージャー','マイペース職人'], conflict:'ゴーゴー行動派'},
-  ILE:{dual:'ゆるふわ癒し役', same:['理屈マスター','場を盛り上げ隊長'], conflict:'正義の番人'},
-  LII:{dual:'場を盛り上げ隊長', same:['ひらめき発明家','ゆるふわ癒し役'], conflict:'カリスマ配信者'},
-  LIE:{dual:'正義の番人', same:['未来予報士','理屈マスター'], conflict:'ゆるふわ癒し役'},
-  ILI:{dual:'カリスマ配信者', same:['正義の番人','戦略プランナー'], conflict:'場を盛り上げ隊長'},
-  ESE:{dual:'理屈マスター', same:['ひらめき発明家','ゆるふわ癒し役'], conflict:'未来予報士'},
-  ESI:{dual:'戦略プランナー', same:['未来予報士','理屈マスター'], conflict:'ひらめき発明家'},
-  SEE:{dual:'未来予報士', same:['正義の番人','戦略プランナー'], conflict:'理屈マスター'},
-  SLE:{dual:'夢見る共感者', same:['ドラマティック演出家','ルール番長'], conflict:'お人好し仲裁役'},
-  SEI:{dual:'ひらめき発明家', same:['場を盛り上げ隊長','理屈マスター'], conflict:'戦略プランナー'},
-  LSE:{dual:'夢見る共感者', same:['お人好し仲裁役','マイペース職人'], conflict:'ドラマティック演出家'},
-  LSI:{dual:'ドラマティック演出家', same:['夢見る共感者','ゴーゴー行動派'], conflict:'アイデア冒険家'},
-  SLI:{dual:'アイデア冒険家', same:['段取りマネージャー','お人好し仲裁役'], conflict:'ドラマティック演出家'},
+  IEE:{
+    dual:{name:'マイペース職人', desc:'落ち着きがIEEのアイデアを現実に定着させる'},
+    same:[
+      {name:'段取りマネージャー', desc:'現実的視点で補完し合える'},
+      {name:'お人好し仲裁役', desc:'人間関係重視で安心できる'}
+    ],
+    conflict:{name:'ルール番長', desc:'厳格さが自由奔放なIEEと衝突しやすい'}
+  },
+  IEI:{
+    dual:{name:'ゴーゴー行動派', desc:'行動力がIEIの夢想を現実に引き上げる'},
+    same:[
+      {name:'ドラマティック演出家', desc:'Betaクアドラで共感・演出が噛み合う'},
+      {name:'ルール番長', desc:'厳格さと感情表現の組合せで場を締める'}
+    ],
+    conflict:{name:'段取りマネージャー', desc:'計画重視で感情的なIEIと対立しやすい'}
+  },
+  EIE:{
+    dual:{name:'ルール番長', desc:'冷静で規律あるLSIがEIEの情熱を安定させる'},
+    same:[
+      {name:'夢見る共感者', desc:'Betaクアドラで感情と未来を共に語れる'},
+      {name:'ゴーゴー行動派', desc:'勢いあるSLEと一緒に盛り上げ役を担える'}
+    ],
+    conflict:{name:'マイペース職人', desc:'消極的なSLIとEIEの情熱は噛み合いにくい'}
+  },
+  EII:{
+    dual:{name:'カリスマ配信者', desc:'華やかなSEEがEIIの誠実さを引き出す'},
+    same:[
+      {name:'段取りマネージャー', desc:'安定を大切にする仲間として相性が良い'},
+      {name:'マイペース職人', desc:'落ち着いたSLIと互いに安心感を得られる'}
+    ],
+    conflict:{name:'ゴーゴー行動派', desc:'強引なSLEと衝突しやすい'}
+  },
+  ILE:{
+    dual:{name:'ゆるふわ癒し役', desc:'SEIの柔らかさがILEの発想を支える'},
+    same:[
+      {name:'理屈マスター', desc:'理論でアイデアを整理してくれる'},
+      {name:'場を盛り上げ隊長', desc:'明るさで発明を楽しく広げてくれる'}
+    ],
+    conflict:{name:'正義の番人', desc:'倫理観を重んじるESIと対立しやすい'}
+  },
+  LII:{
+    dual:{name:'場を盛り上げ隊長', desc:'社交的なESEがLIIの理屈を和らげる'},
+    same:[
+      {name:'ひらめき発明家', desc:'自由な発想を理論で支える'},
+      {name:'ゆるふわ癒し役', desc:'穏やかに理論を補完してくれる'}
+    ],
+    conflict:{name:'カリスマ配信者', desc:'華やかなSEEと現実的理屈が噛み合わない'}
+  },
+  LIE:{
+    dual:{name:'正義の番人', desc:'倫理観あるESIがLIEの戦略を安定させる'},
+    same:[
+      {name:'未来予報士', desc:'長期的な視点を共有できる'},
+      {name:'理屈マスター', desc:'論理を補完し合える参謀関係'}
+    ],
+    conflict:{name:'ゆるふわ癒し役', desc:'穏やかなSEIと成果志向のLIEはかみ合いにくい'}
+  },
+  ILI:{
+    dual:{name:'カリスマ配信者', desc:'SEEの行動力がILIの未来予測を実現に結びつける'},
+    same:[
+      {name:'正義の番人', desc:'堅実さを共有できる'},
+      {name:'戦略プランナー', desc:'成果志向を共に語れる'}
+    ],
+    conflict:{name:'場を盛り上げ隊長', desc:'明るいESEと慎重なILIは温度差が大きい'}
+  },
+  ESE:{
+    dual:{name:'理屈マスター', desc:'LIIの論理がESEの明るさを支える'},
+    same:[
+      {name:'ひらめき発明家', desc:'新しい企画を楽しく広げられる'},
+      {name:'ゆるふわ癒し役', desc:'安心感を与え合える'}
+    ],
+    conflict:{name:'未来予報士', desc:'慎重すぎるILIと勢いのESEはすれ違いやすい'}
+  },
+  ESI:{
+    dual:{name:'戦略プランナー', desc:'LIEの成果志向とESIの誠実さがかみ合う'},
+    same:[
+      {name:'未来予報士', desc:'堅実さを共有できる'},
+      {name:'理屈マスター', desc:'理論と倫理のバランスが良い'}
+    ],
+    conflict:{name:'ひらめき発明家', desc:'自由奔放なILEと衝突しやすい'}
+  },
+  SEE:{
+    dual:{name:'未来予報士', desc:'ILIの冷静な視点がSEEの情熱を補う'},
+    same:[
+      {name:'正義の番人', desc:'道徳的視点で共感できる'},
+      {name:'戦略プランナー', desc:'成果を重視する仲間'}
+    ],
+    conflict:{name:'理屈マスター', desc:'LIIの理屈に窮屈さを感じやすい'}
+  },
+  SLE:{
+    dual:{name:'夢見る共感者', desc:'IEIの感性がSLEの勢いを和らげる'},
+    same:[
+      {name:'ドラマティック演出家', desc:'Betaクアドラの盛り上げ役仲間'},
+      {name:'ルール番長', desc:'統率力を共有できる'}
+    ],
+    conflict:{name:'お人好し仲裁役', desc:'調和を重んじるEIIと衝突しやすい'}
+  },
+  SEI:{
+    dual:{name:'ひらめき発明家', desc:'ILEの発想をSEIが穏やかにサポートする'},
+    same:[
+      {name:'場を盛り上げ隊長', desc:'明るさを共有できる'},
+      {name:'理屈マスター', desc:'論理を柔らかく包んでくれる'}
+    ],
+    conflict:{name:'戦略プランナー', desc:'成果優先のLIEと柔らかいSEIはすれ違う'}
+  },
+  LSE:{
+    dual:{name:'夢見る共感者', desc:'IEIの感性をLSEの段取りで支える'},
+    same:[
+      {name:'お人好し仲裁役', desc:'調和を保ちながら現実性を持てる'},
+      {name:'マイペース職人', desc:'安定した進行を共有できる'}
+    ],
+    conflict:{name:'ドラマティック演出家', desc:'情熱的すぎるEIEと衝突しやすい'}
+  },
+  LSI:{
+    dual:{name:'ドラマティック演出家', desc:'EIEの情熱をLSIが秩序で支える'},
+    same:[
+      {name:'夢見る共感者', desc:'Betaクアドラで感情を共有できる'},
+      {name:'ゴーゴー行動派', desc:'勢いを持つ仲間'}
+    ],
+    conflict:{name:'アイデア冒険家', desc:'奔放なIEEにストレスを感じやすい'}
+  },
+  SLI:{
+    dual:{name:'アイデア冒険家', desc:'IEEの発想をSLIの堅実さで形にできる'},
+    same:[
+      {name:'段取りマネージャー', desc:'計画を安定させる仲間'},
+      {name:'お人好し仲裁役', desc:'人間関係重視で調和できる'}
+    ],
+    conflict:{name:'ドラマティック演出家', desc:'EIEの情熱を持て余しやすい'}
+  }
 };
 
 /* ===================== タイプ詳細（全16タイプ＋Variants） ===================== */
@@ -699,16 +811,26 @@ function renderResultView(){
   html.push(`<h2>あなたは <b>「${t.name}」</b> タイプ</h2>`);
   html.push(`<p class="muted">(ソシオニクス表記: <b>${tKey}</b>)</p>`);
   html.push(`<p>${d.intro}</p>`);
+
   html.push(`<h3>🌟 強み</h3><ul>${d.strength.map(x=>`<li>${x}</li>`).join('')}</ul>`);
   html.push(`<h3>⚠️ 弱み</h3><ul>${d.weak.map(x=>`<li>${x}</li>`).join('')}</ul>`);
-  html.push(`<h3>🤝 相性</h3><ul><li><b>デュアル:</b>${rel.dual}</li><li><b>同クアドラ:</b>${rel.same.join("・")}</li><li><b>コンフリクト:</b>${rel.conflict}</li></ul>`);
+
+  // --- 相性（改善案3：名前＋説明付き） ---
+  html.push(`<h3>🤝 相性</h3>
+  <ul>
+    <li><b>デュアル:</b> ${rel.dual.name} ― ${rel.dual.desc}</li>
+    <li><b>同クアドラ:</b><br>${rel.same.map(x=>`・${x.name} ― ${x.desc}`).join("<br>")}</li>
+    <li><b>コンフリクト:</b> ${rel.conflict.name} ― ${rel.conflict.desc}</li>
+  </ul>`);
+
   html.push(`<h3>📊 候補スコア</h3><ol>${candidates.slice(0,3).map(c=>`<li>${c.key} (${(c.score*100).toFixed(1)}%)</li>`).join("")}</ol>`);
   html.push(`<h3>🔒 信頼度: ${confidence}</h3>`);
+
   const card=document.getElementById("resultCard");
-  card.innerHTML=html.join(""); card.style.display="block";
+  card.innerHTML=html.join(""); 
+  card.style.display="block";
   card.dataset.share=`【雲井鳴診断】タイプ: ${t.name} (ソシオニクス=${tKey}, 信頼度=${confidence})`;
 }
-
   /* ===================== UI制御 ===================== */
   let current=[], answers={}, lastResult=null;
   function setMode(mode){
@@ -759,6 +881,7 @@ function renderResultView(){
   </script>
 </body>
 </html>
+
 
 
 
