@@ -15,9 +15,9 @@
       --border: #e2e8f0;
       --warn: #dc2626;
     }
-    body { margin: 0; font-family: system-ui; background: var(--bg); color: var(--fg); }
+    body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; background: var(--bg); color: var(--fg);}
     .wrap { max-width: 920px; margin: 0 auto; padding: 16px 16px 96px }
-    header { display: flex; justify-content: space-between; margin: 12px 0 20px; }
+    header { display: flex; justify-content: space-between; margin: 12px 0 20px; align-items:flex-start; gap:12px;}
     h1 { font-size: 28px; font-weight: 800; background: linear-gradient(90deg,var(--brand),var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin:0 0 6px;}
     .muted { color: var(--muted); font-size: 13px }
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; box-shadow: 0 6px 18px rgba(15,23,42,0.08);}
@@ -26,13 +26,16 @@
     .progress>div { height:100%;background:linear-gradient(90deg,var(--brand),var(--accent));width:0%;transition:width .3s ease }
     .q { padding:16px 18px; border-top:1px solid var(--border) }
     .q:first-child { border-top:none }
+    .qtitle {font-size:15px; margin:0 0 12px;}
     .slider { display:flex;align-items:center;gap:8px }
     input[type=range]{width:100%;height:36px;accent-color:var(--brand);}
     .btn{border:none;background:var(--brand);color:#fff;padding:10px 16px;border-radius:12px;font-weight:700;cursor:pointer;}
     .btn.ghost{background:#fff;color:var(--brand);border:1px solid var(--brand);}
+    .btn:hover{opacity:0.9;}
+    .btn.ghost:hover{background:#f1f5f9;}
     .footer{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,0.98);border-top:1px solid var(--border);}
-    .footer .inner{max-width:920px;margin:0 auto;padding:10px 16px;display:flex;justify-content:space-between;}
-    .result{padding:24px;border-radius:18px;background:#fff;box-shadow:0 8px 20px rgba(0,0,0,0.1);}
+    .footer .inner{max-width:920px;margin:0 auto;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+    .result{padding:24px;border-radius:18px;background:#fff;box-shadow:0 8px 20px rgba(0,0,0,0.1);line-height:1.7;}
     .result h2{font-size:24px;margin:0 0 12px;}
     .result h3{margin-top:18px;font-size:18px;border-left:4px solid var(--brand);padding-left:8px;}
     .warn{color:var(--warn);background:#fee2e2;padding:10px 14px;border-radius:10px;margin-top:10px;font-weight:600;}
@@ -43,13 +46,14 @@
     <header>
       <div>
         <h1>雲井鳴診断（24問/60問・日本語ポップ版）</h1>
-        <div class="muted">日常の質問に答えるだけで診断できます。回答はブラウザ内のみで処理されます。</div>
+        <div class="muted">日常の質問に答えるだけで、あなたの立ち位置と相性がわかります。回答はブラウザ内のみで処理されます。</div>
       </div>
       <div>
         <button class="btn ghost" id="mode24">24問版</button>
         <button class="btn" id="mode60">60問版</button>
       </div>
     </header>
+
     <section id="progressCard" class="card pad">
       <div class="progress"><div id="bar"></div></div>
       <div id="count" class="muted">0/0 回答（0%）</div>
@@ -58,6 +62,7 @@
     <section id="resultCard" class="result" style="display:none; margin-top:20px;"></section>
     <div id="warnMsg" class="warn"></div>
   </div>
+
   <div class="footer">
     <div class="inner">
       <span id="modeLabel">24問版</span>
@@ -67,7 +72,7 @@
       </div>
     </div>
   </div>
- <!-- ===================== JavaScript部分 ===================== -->
+
   <script>
  /* ===================== 改良版 24問（精選・最適化） ===================== */
 const Q24 = [
@@ -690,83 +695,89 @@ function buildResult(){
 }
 
 /* ===================== 結果描画 ===================== */
-function renderResultView(){
-  if(!lastResult)return;
-  const {t,rel,d,tKey,candidates,confidence}=lastResult;
-  const html=[];
-  html.push(`<h2>あなたは <b>「${t.name}」</b> タイプ</h2>`);
-  html.push(`<p class="muted">(ソシオニクス表記: <b>${tKey}</b>)</p>`);
-  html.push(`<p>${d.intro}</p>`);
+  function renderResultView(){
+    if(!lastResult)return;
+    const {t,rel,d,tKey,candidates,confidence}=lastResult;
+    const html=[];
+    html.push(`<h2>あなたは <b>「${t.name}」</b> タイプ</h2>`);
+    html.push(`<p class="muted">(ソシオニクス表記: <b>${tKey}</b>)</p>`);
+    html.push(`<p>${d.intro}</p>`);
+    html.push(`<h3>🌟 強み</h3><ul>${d.strength.map(x=>`<li>${x}</li>`).join('')}</ul>`);
+    html.push(`<h3>⚠️ 弱み</h3><ul>${d.weak.map(x=>`<li>${x}</li>`).join('')}</ul>`);
+    html.push(`<h3>🤝 相性</h3><ul>
+      <li><b>デュアル:</b> ${rel.dual.name} ― ${rel.dual.desc}</li>
+      <li><b>同クアドラ:</b><br>${rel.same.map(x=>`・${x.name} ― ${x.desc}`).join("<br>")}</li>
+      <li><b>コンフリクト:</b> ${rel.conflict.name} ― ${rel.conflict.desc}</li>
+    </ul>`);
+    html.push(`<h3>📊 候補スコア</h3><ol>${candidates.slice(0,3).map(c=>`<li>${c.key} (${(c.score*100).toFixed(1)}%)</li>`).join("")}</ol>`);
+    html.push(`<h3>🔒 信頼度: ${confidence}</h3>`);
+    const card=document.getElementById("resultCard");
+    card.innerHTML=html.join(""); card.style.display="block";
+  }
+/* ===================== UI制御 ===================== */
+let current = [], answers = {}, lastResult = null;
 
-  html.push(`<h3>🌟 強み</h3><ul>${d.strength.map(x=>`<li>${x}</li>`).join('')}</ul>`);
-  html.push(`<h3>⚠️ 弱み</h3><ul>${d.weak.map(x=>`<li>${x}</li>`).join('')}</ul>`);
-
-  // --- 相性（改善案3：名前＋説明付き） ---
-  html.push(`<h3>🤝 相性</h3>
-  <ul>
-    <li><b>デュアル:</b> ${rel.dual.name} ― ${rel.dual.desc}</li>
-    <li><b>同クアドラ:</b><br>${rel.same.map(x=>`・${x.name} ― ${x.desc}`).join("<br>")}</li>
-    <li><b>コンフリクト:</b> ${rel.conflict.name} ― ${rel.conflict.desc}</li>
-  </ul>`);
-
-  html.push(`<h3>📊 候補スコア</h3><ol>${candidates.slice(0,3).map(c=>`<li>${c.key} (${(c.score*100).toFixed(1)}%)</li>`).join("")}</ol>`);
-  html.push(`<h3>🔒 信頼度: ${confidence}</h3>`);
-
-  const card=document.getElementById("resultCard");
-  card.innerHTML=html.join(""); 
-  card.style.display="block";
-  card.dataset.share=`【雲井鳴診断】タイプ: ${t.name} (ソシオニクス=${tKey}, 信頼度=${confidence})`;
+function setMode(mode){
+  current = (mode === "24") ? Q24 : Q60;
+  document.getElementById("modeLabel").textContent =
+    (mode === "24") ? "24問版（改良）" : "60問版（じっくり）";
+  answers = {};
+  document.getElementById("questionCard").innerHTML = current.map((q,i)=>`
+    <div class="q" id="${q.id}">
+      <div class="qtitle">Q${i+1}. ${q.text}</div>
+      <div class="slider">
+        <span>-5</span>
+        <input type="range" min="-5" max="5" step="1" value="0"
+          oninput="answers['${q.id}']=Number(this.value);updateProgress()">
+        <span>+5</span>
+      </div>
+    </div>`).join('');
+  updateProgress();
 }
-  /* ===================== UI制御 ===================== */
-  let current=[], answers={}, lastResult=null;
-  function setMode(mode){
-    current=(mode==="24")?Q24:Q60;
-    document.getElementById("modeLabel").textContent=(mode==="24")?"24問版（改良）":"60問版（じっくり）";
-    answers={};
-    document.getElementById("questionCard").innerHTML=current.map((q,i)=>`
-      <div class="q" id="${q.id}">
-        <div class="qtitle">Q${i+1}. ${q.text}</div>
-        <div class="slider">
-          <span>-5</span>
-          <input type="range" min="-5" max="5" step="1" value="0" oninput="answers['${q.id}']=Number(this.value);updateProgress()">
-          <span>+5</span>
-        </div>
-      </div>`).join('');
-    updateProgress();
+
+function updateProgress(){
+  const answered = Object.keys(answers).length;
+  const progress = Math.round((answered / current.length) * 100);
+  document.getElementById("bar").style.width = progress + "%";
+  document.getElementById("count").textContent =
+    `${answered}/${current.length} 回答（${progress}%）`;
+}
+
+function tryShowResult(){
+  const unanswered = current.filter(q => answers[q.id] === undefined);
+  if(unanswered.length > 0){
+    document.getElementById('warnMsg').textContent =
+      `⚠ 未回答があります（残り ${unanswered.length} 問）`;
+    return;
   }
-  function updateProgress(){
-    const answered=Object.keys(answers).length;
-    const progress=Math.round((answered/current.length)*100);
-    document.getElementById("bar").style.width=progress+"%";
-    document.getElementById("count").textContent=`${answered}/${current.length} 回答（${progress}%）`;
-  }
-  function tryShowResult(){
-    const unanswered=current.filter(q=>answers[q.id]===undefined);
-    if(unanswered.length>0){
-      document.getElementById('warnMsg').textContent=`⚠ 未回答があります（残り ${unanswered.length} 問）`;
-      return;
-    }
-    buildResult();
-  }
-  function copyToClipboard(text){
-    navigator.clipboard.writeText(text).then(()=>alert("結果をコピーしました！"))
+  document.getElementById('warnMsg').textContent = ""; // 警告をリセット
+  buildResult();
+}
+
+function copyToClipboard(text){
+  navigator.clipboard.writeText(text)
+    .then(()=>alert("結果をコピーしました！"))
     .catch(()=>alert("コピーに失敗しました"));
-  }
-  function init(){
-    document.getElementById('mode24').addEventListener('click',()=>setMode('24'));
-    document.getElementById('mode60').addEventListener('click',()=>setMode('60'));
-    document.getElementById('calcBtn').addEventListener('click', tryShowResult);
-    document.getElementById('copyBtn').addEventListener('click',()=>{
-      const txt=document.getElementById('resultCard').dataset.share||'';
-      if(!txt){alert('まず結果を表示してください。');return;}
-      copyToClipboard(txt);
-    });
-    setMode('24');
-  }
-  document.addEventListener('DOMContentLoaded',init);
+}
+
+function init(){
+  document.getElementById('mode24').addEventListener('click',()=>setMode('24'));
+  document.getElementById('mode60').addEventListener('click',()=>setMode('60'));
+  document.getElementById('calcBtn').addEventListener('click', tryShowResult);
+  document.getElementById('copyBtn').addEventListener('click',()=>{
+    const txt = document.getElementById('resultCard').dataset.share || '';
+    if(!txt){ alert('まず結果を表示してください。'); return; }
+    copyToClipboard(txt);
+  });
+  setMode('24');
+}
+
+document.addEventListener('DOMContentLoaded', init);
+
   </script>
 </body>
 </html>
+
 
 
 
