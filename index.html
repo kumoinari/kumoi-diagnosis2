@@ -294,6 +294,25 @@ const Q60 = [
   {id:'q59', text:'新しいことに挑戦して刺激を求める。', axis:'Ne', polarity:+1},
   {id:'q60', text:'一つの未来像に集中して考え込む。', axis:'Ni', polarity:+1},
 ];
+    /* ===================== タイプ定義 ===================== */
+const TYPES = {
+  IEE:{name:'アイデア冒険家', cluster:'アイデアマン型', perspective:'アイデア視点', quadra:'Delta'},
+  IEI:{name:'夢見る共感者', cluster:'夢語り型', perspective:'ドラマティック視点', quadra:'Beta'},
+  EIE:{name:'ドラマティック演出家', cluster:'盛り上げ役型', perspective:'ドラマティック視点', quadra:'Beta'},
+  EII:{name:'お人好し仲裁役', cluster:'癒し型', perspective:'調和視点', quadra:'Delta'},
+  ILE:{name:'ひらめき発明家', cluster:'アイデアマン型', perspective:'アイデア視点', quadra:'Alpha'},
+  LII:{name:'理屈マスター', cluster:'参謀型', perspective:'ルール視点', quadra:'Alpha'},
+  LIE:{name:'戦略プランナー', cluster:'参謀型', perspective:'アイデア視点', quadra:'Gamma'},
+  ILI:{name:'未来予報士', cluster:'夢語り型', perspective:'ルール視点', quadra:'Gamma'},
+  ESE:{name:'場を盛り上げ隊長', cluster:'ムードメーカー型', perspective:'主役視点', quadra:'Alpha'},
+  ESI:{name:'正義の番人', cluster:'守り役型', perspective:'ルール視点', quadra:'Gamma'},
+  SEE:{name:'カリスマ配信者', cluster:'ムードメーカー型', perspective:'主役視点', quadra:'Gamma'},
+  SLE:{name:'ゴーゴー行動派', cluster:'盛り上げ役型', perspective:'主役視点', quadra:'Beta'},
+  SEI:{name:'ゆるふわ癒し役', cluster:'癒し型', perspective:'調和視点', quadra:'Alpha'},
+  LSE:{name:'段取りマネージャー', cluster:'段取り型', perspective:'ルール視点', quadra:'Delta'},
+  LSI:{name:'ルール番長', cluster:'段取り型', perspective:'ルール視点', quadra:'Beta'},
+  SLI:{name:'マイペース職人', cluster:'守り役型', perspective:'調和視点', quadra:'Delta'},
+};
 
 /* ===================== 相性（デュアル/同クアドラ/コンフリクト） ===================== */
 const REL = {
@@ -313,25 +332,6 @@ const REL = {
   LSE:{dual:'夢見る共感者', same:['お人好し仲裁役','マイペース職人'], conflict:'ドラマティック演出家'},
   LSI:{dual:'ドラマティック演出家', same:['夢見る共感者','ゴーゴー行動派'], conflict:'アイデア冒険家'},
   SLI:{dual:'アイデア冒険家', same:['段取りマネージャー','お人好し仲裁役'], conflict:'ドラマティック演出家'},
-};
-    /* ===================== タイプ定義 ===================== */
-const TYPES = {
-  IEE:{name:'アイデア冒険家', cluster:'アイデアマン型', perspective:'アイデア視点', quadra:'Delta'},
-  IEI:{name:'夢見る共感者', cluster:'夢語り型', perspective:'ドラマティック視点', quadra:'Beta'},
-  EIE:{name:'ドラマティック演出家', cluster:'盛り上げ役型', perspective:'ドラマティック視点', quadra:'Beta'},
-  EII:{name:'お人好し仲裁役', cluster:'癒し型', perspective:'調和視点', quadra:'Delta'},
-  ILE:{name:'ひらめき発明家', cluster:'アイデアマン型', perspective:'アイデア視点', quadra:'Alpha'},
-  LII:{name:'理屈マスター', cluster:'参謀型', perspective:'ルール視点', quadra:'Alpha'},
-  LIE:{name:'戦略プランナー', cluster:'参謀型', perspective:'アイデア視点', quadra:'Gamma'},
-  ILI:{name:'未来予報士', cluster:'夢語り型', perspective:'ルール視点', quadra:'Gamma'},
-  ESE:{name:'場を盛り上げ隊長', cluster:'ムードメーカー型', perspective:'主役視点', quadra:'Alpha'},
-  ESI:{name:'正義の番人', cluster:'守り役型', perspective:'ルール視点', quadra:'Gamma'},
-  SEE:{name:'カリスマ配信者', cluster:'ムードメーカー型', perspective:'主役視点', quadra:'Gamma'},
-  SLE:{name:'ゴーゴー行動派', cluster:'盛り上げ役型', perspective:'主役視点', quadra:'Beta'},
-  SEI:{name:'ゆるふわ癒し役', cluster:'癒し型', perspective:'調和視点', quadra:'Alpha'},
-  LSE:{name:'段取りマネージャー', cluster:'段取り型', perspective:'ルール視点', quadra:'Delta'},
-  LSI:{name:'ルール番長', cluster:'段取り型', perspective:'ルール視点', quadra:'Beta'},
-  SLI:{name:'マイペース職人', cluster:'守り役型', perspective:'調和視点', quadra:'Delta'},
 };
 
 /* ===================== タイプ詳細（全16タイプ＋variants） ===================== */
@@ -724,6 +724,7 @@ function renderResultView(){
   </script>
 </body>
 </html>
+
 
 
 
