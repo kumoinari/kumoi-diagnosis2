@@ -529,6 +529,17 @@ const QUESTION_WEIGHTS = {
   q20: 2.0,  // 「緊張した場面で自然と主導権を握る」→ Seを強く示す
   // …他にも必要に応じて追加
 };
+// ▼ ファジィ変換関数
+function fuzzy(val) {
+  const range = 5; // スライダーの最大値（-5〜+5）
+  const norm = val / range; // -1〜+1 に正規化
+
+  const degreeYes     = Math.max(0, norm);   // 正の度合い
+  const degreeNo      = Math.max(0, -norm);  // 負の度合い
+  const degreeNeutral = 1 - Math.abs(norm);  // 中立度
+
+  return {yes: degreeYes, no: degreeNo, neutral: degreeNeutral};
+}
 
 /* ---------- 集計（軸 & 機能） ---------- */
 function computeAxes() {
@@ -539,19 +550,32 @@ function computeAxes() {
   current.forEach(q=>{
     const val = answers[q.id];
     if(val===undefined) return;
+
+    // ▼ ファジィ変換
+    const fz = fuzzy(val);
+
     if (ax.hasOwnProperty(q.axis)) {
       const w = QUESTION_WEIGHTS[q.id] || WEIGHTS[q.axis] || 1;
-ax[q.axis] += val * q.polarity * w;
+
+      // polarity が +1 → yesがプラス寄与、noがマイナス寄与
+      // polarity が -1 → 逆になる
+      ax[q.axis] += (fz.yes - fz.no) * q.polarity * w;
+
+      // neutralは弱めに寄与（調整可：0.1を変更）
+      ax[q.axis] += fz.neutral * 0.1 * q.polarity * w;
+
       counts[q.axis] += w;
+
     } else if (func.hasOwnProperty(q.axis)) {
       const w = WEIGHTS.functions;
-      func[q.axis] += val * q.polarity * w;
+      func[q.axis] += (fz.yes - fz.no) * q.polarity * w;
       counts[q.axis] += w;
-} else if (q.axis === 'S') {
-  const w = WEIGHTS.NS;
-  ax.NS -= val * q.polarity * w;  // ← マイナスで積む
-  counts.NS += w;
-}
+
+    } else if (q.axis === 'S') {
+      const w = WEIGHTS.NS;
+      ax.NS -= (fz.yes - fz.no) * q.polarity * w;
+      counts.NS += w;
+    }
   });
 
   // 正規化
@@ -560,7 +584,6 @@ ax[q.axis] += val * q.polarity * w;
 
   return {ax, func};
 }
-
 /* ---------- 軸→MBTI確率合成 → ソシオニクス型マップ ---------- */
 function pickType({ax, func}) {
   function decideAxis(v, pos, neg) {
@@ -790,6 +813,7 @@ function init() {
 
 document.addEventListener('DOMContentLoaded', init);
 </script>
+
 
 
 
