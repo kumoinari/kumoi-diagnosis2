@@ -519,74 +519,142 @@ const DETAIL = {
     }
   }
 };
- /* ===================== 完全版アルゴリズム ===================== */
-  const WEIGHTS = { EI:1.5, NS:1.3, TF:1.3, JP:1.0, functions:1.6 };
+/* ===================== 統合アルゴリズム ===================== */
+const WEIGHTS = { EI:1.5, NS:1.3, TF:1.3, JP:1.0, functions:1.6 };
 
-  function computeAxes() {
-    const ax = {EI:0, NS:0, TF:0, JP:0};
-    const func = {Ni:0,Ne:0,Si:0,Se:0,Ti:0,Te:0,Fi:0,Fe:0};
-    const counts = {...ax, ...func};
-    current.forEach(q=>{
-      const val = answers[q.id];
-      if(val!==undefined){
-        let w = WEIGHTS[q.axis] || WEIGHTS.functions;
-        if(ax.hasOwnProperty(q.axis)){ ax[q.axis]+=val*q.polarity*w; counts[q.axis]+=w; }
-        else if(func.hasOwnProperty(q.axis)){ func[q.axis]+=val*q.polarity*w; counts[q.axis]+=w; }
-      }
-    });
-    for(const k in ax) if(counts[k]>0) ax[k]/=counts[k];
-    for(const k in func) if(counts[k]>0) func[k]/=counts[k];
-    return {ax,func};
-  }
-
-  function pickType({ax,func}){
-    function decideAxis(v,p,n){
-      if(v>1) return {[p]:1};
-      if(v<-1) return {[n]:1};
-      const prob=(v+1)/2;
-      return {[p]:prob,[n]:1-prob};
+/* 軸スコア算出 */
+function computeAxes() {
+  const ax = {EI:0, NS:0, TF:0, JP:0};
+  const func = {Ni:0,Ne:0,Si:0,Se:0,Ti:0,Te:0,Fi:0,Fe:0};
+  const counts = {...ax, ...func};
+  current.forEach(q=>{
+    const val = answers[q.id];
+    if(val!==undefined){
+      let w = WEIGHTS[q.axis] || WEIGHTS.functions;
+      if(ax.hasOwnProperty(q.axis)){ ax[q.axis]+=val*q.polarity*w; counts[q.axis]+=w; }
+      else if(func.hasOwnProperty(q.axis)){ func[q.axis]+=val*q.polarity*w; counts[q.axis]+=w; }
     }
-    const ei=decideAxis(ax.EI,"E","I");
-    const ns=decideAxis(ax.NS,"N","S");
-    const tf=decideAxis(ax.TF,"T","F");
-    const jp=decideAxis(ax.JP,"J","P");
-    const combos=[];
-    for(const e in ei)for(const n in ns)for(const t in tf)for(const j in jp)
-      combos.push({key:e+n+t+j,score:ei[e]*ns[n]*tf[t]*jp[j]});
-    const MAP={ENFP:'IEE',INFP:'IEI',ENFJ:'EIE',INFJ:'EII',ENTP:'ILE',INTJ:'LII',
-               ENTJ:'LIE',INTP:'ILI',ESFJ:'ESE',ISFJ:'ESI',ESFP:'SEE',ESTP:'SLE',
-               ISFP:'SEI',ESTJ:'LSE',ISTJ:'LSI',ISTP:'SLI'};
-    if(func.Si>func.Ne){ combos.forEach(c=>{ if(c.key.includes("N"))c.score*=0.85; if(c.key.includes("S"))c.score*=1.15; }); }
-    if(func.Te>func.Fi){ combos.forEach(c=>{ if(c.key.includes("F"))c.score*=0.9; if(c.key.includes("T"))c.score*=1.1; }); }
-    const tally={};
-    combos.forEach(c=>{ const k=MAP[c.key]||"IEE"; tally[k]=(tally[k]||0)+c.score; });
-    return Object.entries(tally).sort((a,b)=>b[1]-a[1]).map(([k,s])=>({key:k,score:s}));
-  }
+  });
+  for(const k in ax) if(counts[k]>0) ax[k]/=counts[k];
+  for(const k in func) if(counts[k]>0) func[k]/=counts[k];
+  return {ax,func};
+}
 
-  function buildResult(){
-    const {ax,func}=computeAxes();
-    const candidates=pickType({ax,func});
-    const top=candidates[0];
-    const t=TYPES[top.key], rel=REL[top.key], d=DETAIL[top.key];
-    lastResult={t,rel,d,ax,func,tKey:top.key,candidates};
-    renderResultView();
+/* 軸方式タイプ判定 */
+function pickType({ax,func}){
+  function decideAxis(v,p,n){
+    if(v>1) return {[p]:1};
+    if(v<-1) return {[n]:1};
+    const prob=(v+1)/2;
+    return {[p]:prob,[n]:1-prob};
   }
+  const ei=decideAxis(ax.EI,"E","I");
+  const ns=decideAxis(ax.NS,"N","S");
+  const tf=decideAxis(ax.TF,"T","F");
+  const jp=decideAxis(ax.JP,"J","P");
+  const combos=[];
+  for(const e in ei)for(const n in ns)for(const t in tf)for(const j in jp)
+    combos.push({key:e+n+t+j,score:ei[e]*ns[n]*tf[t]*jp[j]});
+  const MAP={ENFP:'IEE',INFP:'IEI',ENFJ:'EIE',INFJ:'EII',ENTP:'ILE',INTJ:'LII',
+             ENTJ:'LIE',INTP:'ILI',ESFJ:'ESE',ISFJ:'ESI',ESFP:'SEE',ESTP:'SLE',
+             ISFP:'SEI',ESTJ:'LSE',ISTJ:'LSI',ISTP:'SLI'};
+  // 機能補正
+  if(func.Si>func.Ne){ combos.forEach(c=>{ if(c.key.includes("N"))c.score*=0.85; if(c.key.includes("S"))c.score*=1.15; }); }
+  if(func.Te>func.Fi){ combos.forEach(c=>{ if(c.key.includes("F"))c.score*=0.9; if(c.key.includes("T"))c.score*=1.1; }); }
+  const tally={};
+  combos.forEach(c=>{ const k=MAP[c.key]||"IEE"; tally[k]=(tally[k]||0)+c.score; });
+  return Object.entries(tally).map(([k,s])=>({key:k,score:s}));
+}
 
-  function renderResultView(){
-    if(!lastResult)return;
-    const {t,rel,d,tKey,candidates}=lastResult;
-    const html=[];
-    html.push(`<h2>あなたは <b>「${t.name}」</b> タイプ</h2>`);
-    html.push(`<p class="muted">(ソシオニクス表記: <b>${tKey}</b>)</p>`);
-    html.push(`<p>${d.intro}</p>`);
-    html.push(`<h3>🌟 強み</h3><ul>${d.strength.map(x=>`<li>${x}</li>`).join('')}</ul>`);
-    html.push(`<h3>⚠️ 弱み</h3><ul>${d.weak.map(x=>`<li>${x}</li>`).join('')}</ul>`);
-    html.push(`<h3>🤝 相性</h3><ul><li><b>デュアル:</b>${rel.dual}</li><li><b>同クアドラ:</b>${rel.same.join("・")}</li><li><b>コンフリクト:</b>${rel.conflict}</li></ul>`);
-    html.push(`<h3>📊 他の候補</h3><ol>${candidates.slice(0,3).map(c=>`<li>${c.key} (${(c.score*100).toFixed(1)}%)</li>`).join("")}</ol>`);
-    const card=document.getElementById("resultCard");
-    card.innerHTML=html.join(""); card.style.display="block";
-    card.dataset.share=`【雲井鳴診断】タイプ: ${t.name} (ソシオニクス=${tKey})`;
+/* ===================== ベクトル類似度診断 ===================== */
+function cosineSim(vec1, vec2){
+  let dot=0, norm1=0, norm2=0;
+  for(const k in vec1){
+    dot += (vec1[k]||0) * (vec2[k]||0);
+    norm1 += (vec1[k]||0)**2;
+    norm2 += (vec2[k]||0)**2;
   }
+  return dot / (Math.sqrt(norm1)*Math.sqrt(norm2)+1e-9);
+}
+
+// 参考プロファイル（仮：より精度を上げるなら実データから学習）
+const TYPE_PROFILES = {
+  IEI: {EI:-3, NS:+4, TF:-2, JP:-1},
+  IEE: {EI:+3, NS:+3, TF:-1, JP:-2},
+  EIE: {EI:+4, NS:+2, TF:-3, JP:+1},
+  EII: {EI:-2, NS:+2, TF:-4, JP:+1},
+  ILE: {EI:+2, NS:+4, TF:+2, JP:-2},
+  LII: {EI:-3, NS:+3, TF:+4, JP:+2},
+  LIE: {EI:+1, NS:+3, TF:+4, JP:+3},
+  ILI: {EI:-4, NS:+4, TF:+3, JP:-2},
+  ESE: {EI:+4, NS:-1, TF:-3, JP:+2},
+  ESI: {EI:-2, NS:-1, TF:-4, JP:+3},
+  SEE: {EI:+4, NS:+1, TF:-2, JP:-3},
+  SLE: {EI:+4, NS:+1, TF:+2, JP:-3},
+  SEI: {EI:-3, NS:-2, TF:-2, JP:-2},
+  LSE: {EI:+1, NS:-1, TF:+3, JP:+4},
+  LSI: {EI:-2, NS:-2, TF:+4, JP:+3},
+  SLI: {EI:-4, NS:-3, TF:+1, JP:-1},
+};
+
+function vectorDiagnosis(ax){
+  const sims = Object.keys(TYPE_PROFILES).map(k=>{
+    const sim = cosineSim(ax, TYPE_PROFILES[k]);
+    return {key:k, score:sim};
+  });
+  return sims.sort((a,b)=>b.score-a.score);
+}
+
+/* ===================== 信頼度算出 ===================== */
+function computeConfidence(candidates){
+  if(candidates.length<2) return "Low";
+  const top = candidates[0].score;
+  const second = candidates[1].score;
+  const ratio = top / (top+second);
+  if(ratio>0.65) return "High";
+  if(ratio>0.55) return "Medium";
+  return "Low";
+}
+
+/* ===================== 統合ビルド ===================== */
+function buildResult(){
+  const {ax,func}=computeAxes();
+  const candAxis=pickType({ax,func});
+  const candVec=vectorDiagnosis(ax);
+
+  // スコアを正規化して合算（単純平均）
+  const tally={};
+  candAxis.forEach(c=>{ tally[c.key]=(tally[c.key]||0)+c.score; });
+  candVec.forEach(c=>{ tally[c.key]=(tally[c.key]||0)+c.score; });
+
+  const candidates = Object.entries(tally).map(([k,s])=>({key:k,score:s}));
+  candidates.sort((a,b)=>b.score-a.score);
+
+  const top=candidates[0];
+  const t=TYPES[top.key], rel=REL[top.key], d=DETAIL[top.key];
+  const confidence=computeConfidence(candidates);
+
+  lastResult={t,rel,d,ax,func,tKey:top.key,candidates,confidence};
+  renderResultView();
+}
+
+/* ===================== 結果描画 ===================== */
+function renderResultView(){
+  if(!lastResult)return;
+  const {t,rel,d,tKey,candidates,confidence}=lastResult;
+  const html=[];
+  html.push(`<h2>あなたは <b>「${t.name}」</b> タイプ</h2>`);
+  html.push(`<p class="muted">(ソシオニクス表記: <b>${tKey}</b>)</p>`);
+  html.push(`<p>${d.intro}</p>`);
+  html.push(`<h3>🌟 強み</h3><ul>${d.strength.map(x=>`<li>${x}</li>`).join('')}</ul>`);
+  html.push(`<h3>⚠️ 弱み</h3><ul>${d.weak.map(x=>`<li>${x}</li>`).join('')}</ul>`);
+  html.push(`<h3>🤝 相性</h3><ul><li><b>デュアル:</b>${rel.dual}</li><li><b>同クアドラ:</b>${rel.same.join("・")}</li><li><b>コンフリクト:</b>${rel.conflict}</li></ul>`);
+  html.push(`<h3>📊 候補スコア</h3><ol>${candidates.slice(0,3).map(c=>`<li>${c.key} (${(c.score*100).toFixed(1)}%)</li>`).join("")}</ol>`);
+  html.push(`<h3>🔒 信頼度: ${confidence}</h3>`);
+  const card=document.getElementById("resultCard");
+  card.innerHTML=html.join(""); card.style.display="block";
+  card.dataset.share=`【雲井鳴診断】タイプ: ${t.name} (ソシオニクス=${tKey}, 信頼度=${confidence})`;
+}
 
   /* ===================== UI制御 ===================== */
   let current=[], answers={}, lastResult=null;
@@ -638,6 +706,7 @@ const DETAIL = {
   </script>
 </body>
 </html>
+
 
 
 
