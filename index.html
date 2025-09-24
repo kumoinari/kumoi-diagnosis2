@@ -17,7 +17,7 @@
     }
     body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; background: var(--bg); color: var(--fg);}
     .wrap { max-width: 920px; margin: 0 auto; padding: 16px 16px 96px }
-    header { display: flex; justify-content: space-between; margin: 12px 0 20px; align-items:flex-start; gap:12px;}
+    header { display: flex; justify-content: space-between; margin: 12px 0 20px; align-items:flex-start; gap:12px; flex-wrap:wrap;}
     h1 { font-size: 28px; font-weight: 800; background: linear-gradient(90deg,var(--brand),var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin:0 0 6px;}
     .muted { color: var(--muted); font-size: 13px }
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; box-shadow: 0 6px 18px rgba(15,23,42,0.08);}
@@ -28,6 +28,7 @@
     .q:first-child { border-top:none }
     .qtitle {font-size:15px; margin:0 0 12px;}
     .slider { display:flex;align-items:center;gap:8px }
+    .slider span{font-weight:600;}
     input[type=range]{width:100%;height:36px;accent-color:var(--brand);}
     .btn{border:none;background:var(--brand);color:#fff;padding:10px 16px;border-radius:12px;font-weight:700;cursor:pointer;}
     .btn.ghost{background:#fff;color:var(--brand);border:1px solid var(--brand);}
@@ -59,7 +60,7 @@
       <div id="count" class="muted">0/0 回答（0%）</div>
     </section>
     <section id="questionCard" class="card" style="margin-top:16px;"></section>
-    <section id="resultCard" class="result" style="display:none; margin-top:20px;"></section>
+    <section id="resultCard" class="result" style="display:none; margin-top:20px;" data-share=""></section>
     <div id="warnMsg" class="warn"></div>
   </div>
 
@@ -74,7 +75,7 @@
   </div>
 
   <script>
- /* ===================== 改良版 24問（精選・最適化） ===================== */
+/* ===================== 改良版 24問 ===================== */
 const Q24 = [
   // E/I（外向―内向）
   {id:'q1',  text:'初対面でも自分から話しかけることが多い。', axis:'EI', polarity:+1},
@@ -100,7 +101,7 @@ const Q24 = [
   {id:'q15', text:'新しい情報が入れば計画をすぐに変えられる。', axis:'JP', polarity:-1},
   {id:'q16', text:'旅先ではその場の流れで動くのが楽しい。', axis:'JP', polarity:-1},
 
-  // 機能系
+  // 機能系（Ni/Ne/Si/Se/Ti/Te/Fi/Fe）
   {id:'q17', text:'未来を「必然の流れ」として予感することが多い。', axis:'Ni', polarity:+1},
   {id:'q18', text:'アイデアを次々に思いつき、人に投げかけるのが好きだ。', axis:'Ne', polarity:+1},
   {id:'q19', text:'快適な環境（温度・音・光）がないと集中しにくい。', axis:'Si', polarity:+1},
@@ -110,9 +111,10 @@ const Q24 = [
   {id:'q23', text:'相手の価値観を尊重して接することが大切だと思う。', axis:'Fi', polarity:+1},
   {id:'q24', text:'自分の感情表現が場の雰囲気を左右すると思う。', axis:'Fe', polarity:+1},
 ];
-/* ===================== 改良版 60問（精選・最適化） ===================== */
+
+/* ===================== 改良版 60問 ===================== */
 const Q60 = [
-  // ===================== E/I（外向―内向） =====================
+  // E/I
   {id:'q1',  text:'予定のない休日、人と会う約束があると嬉しい。', axis:'EI', polarity:+1},
   {id:'q2',  text:'長時間の交流の後は一人で休む時間が必要だ。', axis:'EI', polarity:-1},
   {id:'q3',  text:'初対面でも積極的に話しかけられる。', axis:'EI', polarity:+1},
@@ -120,7 +122,7 @@ const Q60 = [
   {id:'q5',  text:'大人数での雑談やイベントは楽しい。', axis:'EI', polarity:+1},
   {id:'q6',  text:'会議や集まりの後はどっと疲れることが多い。', axis:'EI', polarity:-1},
 
-  // ===================== N/S（直感―感覚） =====================
+  // N/S
   {id:'q7',  text:'出来事の背後にある流れや未来を考えることが多い。', axis:'Ni', polarity:+1},
   {id:'q8',  text:'新しいモノを見ると応用や未来像を想像する。', axis:'Ne', polarity:+1},
   {id:'q9',  text:'数字や事実を根拠に判断するのを好む。', axis:'S', polarity:+1},
@@ -130,7 +132,7 @@ const Q60 = [
   {id:'q13', text:'デザインや道具の細部にこだわる。', axis:'Si', polarity:+1},
   {id:'q14', text:'環境の変化（音・光）で気分が大きく変わる。', axis:'Si', polarity:+1},
 
-  // ===================== T/F（論理―倫理） =====================
+  // T/F
   {id:'q15', text:'議論では論理の整合性を最優先する。', axis:'Ti', polarity:+1},
   {id:'q16', text:'効率や成果を重視して判断する。', axis:'Te', polarity:+1},
   {id:'q17', text:'人の気持ちを大切にして結論を出す。', axis:'Fi', polarity:+1},
@@ -140,7 +142,7 @@ const Q60 = [
   {id:'q21', text:'仲間の価値観を尊重して対応する。', axis:'Fi', polarity:+1},
   {id:'q22', text:'自分の感情表現で場を盛り上げる。', axis:'Fe', polarity:+1},
 
-  // ===================== J/P（計画性―柔軟性） =====================
+  // J/P
   {id:'q23', text:'週の初めに予定が埋まっていると安心する。', axis:'JP', polarity:+1},
   {id:'q24', text:'締切は前倒しで終わらせたい。', axis:'JP', polarity:+1},
   {id:'q25', text:'旅は行き当たりばったりで決めたい。', axis:'JP', polarity:-1},
@@ -150,7 +152,7 @@ const Q60 = [
   {id:'q29', text:'ToDoを優先度順に並べることが多い。', axis:'JP', polarity:+1},
   {id:'q30', text:'計画をあまり細かく決めずに進めたい。', axis:'JP', polarity:-1},
 
-  // ===================== 機能強化 Ni/Ne/Si/Se/Ti/Te/Fi/Fe =====================
+  // 機能強化
   {id:'q31', text:'長期的な視点で物事を考えることが多い。', axis:'Ni', polarity:+1},
   {id:'q32', text:'未来のビジョンを語るのが得意だ。', axis:'Ni', polarity:+1},
   {id:'q33', text:'思いついたアイデアを次々広げていく。', axis:'Ne', polarity:+1},
@@ -168,7 +170,7 @@ const Q60 = [
   {id:'q45', text:'場を盛り上げると自分も楽しくなる。', axis:'Fe', polarity:+1},
   {id:'q46', text:'感情を共有して雰囲気を高めたい。', axis:'Fe', polarity:+1},
 
-  // ===================== 補助・差別化用 =====================
+  // 補助・差別化用
   {id:'q47', text:'ルールの一貫性に強くこだわる。', axis:'Ti', polarity:+1},
   {id:'q48', text:'今この瞬間の感覚を大切にする。', axis:'Si', polarity:+1},
   {id:'q49', text:'周囲のモチベーションに影響されやすい。', axis:'Fe', polarity:+1},
@@ -184,6 +186,7 @@ const Q60 = [
   {id:'q59', text:'新しいことに挑戦して刺激を求める。', axis:'Ne', polarity:+1},
   {id:'q60', text:'一つの未来像に集中して考え込む。', axis:'Ni', polarity:+1},
 ];
+<script>
 /* ===================== タイプ定義 ===================== */
 const TYPES = {
   IEE:{name:'アイデア冒険家', cluster:'アイデアマン型', perspective:'アイデア視点', quadra:'Delta'},
@@ -204,139 +207,60 @@ const TYPES = {
   SLI:{name:'マイペース職人', cluster:'守り役型', perspective:'調和視点', quadra:'Delta'},
 };
 
-/* ===================== 相性定義（詳細付き・全16タイプ） ===================== */
+/* ===================== 相性定義 ===================== */
 const REL = {
-  IEE:{
-    dual:{name:'マイペース職人', desc:'落ち着きがIEEのアイデアを現実に定着させる'},
-    same:[
-      {name:'段取りマネージャー', desc:'現実的視点で補完し合える'},
-      {name:'お人好し仲裁役', desc:'人間関係重視で安心できる'}
-    ],
-    conflict:{name:'ルール番長', desc:'厳格さが自由奔放なIEEと衝突しやすい'}
-  },
-  IEI:{
-    dual:{name:'ゴーゴー行動派', desc:'行動力がIEIの夢想を現実に引き上げる'},
-    same:[
-      {name:'ドラマティック演出家', desc:'Betaクアドラで共感・演出が噛み合う'},
-      {name:'ルール番長', desc:'厳格さと感情表現の組合せで場を締める'}
-    ],
-    conflict:{name:'段取りマネージャー', desc:'計画重視で感情的なIEIと対立しやすい'}
-  },
-  EIE:{
-    dual:{name:'ルール番長', desc:'冷静で規律あるLSIがEIEの情熱を安定させる'},
-    same:[
-      {name:'夢見る共感者', desc:'Betaクアドラで感情と未来を共に語れる'},
-      {name:'ゴーゴー行動派', desc:'勢いあるSLEと一緒に盛り上げ役を担える'}
-    ],
-    conflict:{name:'マイペース職人', desc:'消極的なSLIとEIEの情熱は噛み合いにくい'}
-  },
-  EII:{
-    dual:{name:'カリスマ配信者', desc:'華やかなSEEがEIIの誠実さを引き出す'},
-    same:[
-      {name:'段取りマネージャー', desc:'安定を大切にする仲間として相性が良い'},
-      {name:'マイペース職人', desc:'落ち着いたSLIと互いに安心感を得られる'}
-    ],
-    conflict:{name:'ゴーゴー行動派', desc:'強引なSLEと衝突しやすい'}
-  },
-  ILE:{
-    dual:{name:'ゆるふわ癒し役', desc:'SEIの柔らかさがILEの発想を支える'},
-    same:[
-      {name:'理屈マスター', desc:'理論でアイデアを整理してくれる'},
-      {name:'場を盛り上げ隊長', desc:'明るさで発明を楽しく広げてくれる'}
-    ],
-    conflict:{name:'正義の番人', desc:'倫理観を重んじるESIと対立しやすい'}
-  },
-  LII:{
-    dual:{name:'場を盛り上げ隊長', desc:'社交的なESEがLIIの理屈を和らげる'},
-    same:[
-      {name:'ひらめき発明家', desc:'自由な発想を理論で支える'},
-      {name:'ゆるふわ癒し役', desc:'穏やかに理論を補完してくれる'}
-    ],
-    conflict:{name:'カリスマ配信者', desc:'華やかなSEEと現実的理屈が噛み合わない'}
-  },
-  LIE:{
-    dual:{name:'正義の番人', desc:'倫理観あるESIがLIEの戦略を安定させる'},
-    same:[
-      {name:'未来予報士', desc:'長期的な視点を共有できる'},
-      {name:'理屈マスター', desc:'論理を補完し合える参謀関係'}
-    ],
-    conflict:{name:'ゆるふわ癒し役', desc:'穏やかなSEIと成果志向のLIEはかみ合いにくい'}
-  },
-  ILI:{
-    dual:{name:'カリスマ配信者', desc:'SEEの行動力がILIの未来予測を実現に結びつける'},
-    same:[
-      {name:'正義の番人', desc:'堅実さを共有できる'},
-      {name:'戦略プランナー', desc:'成果志向を共に語れる'}
-    ],
-    conflict:{name:'場を盛り上げ隊長', desc:'明るいESEと慎重なILIは温度差が大きい'}
-  },
-  ESE:{
-    dual:{name:'理屈マスター', desc:'LIIの論理がESEの明るさを支える'},
-    same:[
-      {name:'ひらめき発明家', desc:'新しい企画を楽しく広げられる'},
-      {name:'ゆるふわ癒し役', desc:'安心感を与え合える'}
-    ],
-    conflict:{name:'未来予報士', desc:'慎重すぎるILIと勢いのESEはすれ違いやすい'}
-  },
-  ESI:{
-    dual:{name:'戦略プランナー', desc:'LIEの成果志向とESIの誠実さがかみ合う'},
-    same:[
-      {name:'未来予報士', desc:'堅実さを共有できる'},
-      {name:'理屈マスター', desc:'理論と倫理のバランスが良い'}
-    ],
-    conflict:{name:'ひらめき発明家', desc:'自由奔放なILEと衝突しやすい'}
-  },
-  SEE:{
-    dual:{name:'未来予報士', desc:'ILIの冷静な視点がSEEの情熱を補う'},
-    same:[
-      {name:'正義の番人', desc:'道徳的視点で共感できる'},
-      {name:'戦略プランナー', desc:'成果を重視する仲間'}
-    ],
-    conflict:{name:'理屈マスター', desc:'LIIの理屈に窮屈さを感じやすい'}
-  },
-  SLE:{
-    dual:{name:'夢見る共感者', desc:'IEIの感性がSLEの勢いを和らげる'},
-    same:[
-      {name:'ドラマティック演出家', desc:'Betaクアドラの盛り上げ役仲間'},
-      {name:'ルール番長', desc:'統率力を共有できる'}
-    ],
-    conflict:{name:'お人好し仲裁役', desc:'調和を重んじるEIIと衝突しやすい'}
-  },
-  SEI:{
-    dual:{name:'ひらめき発明家', desc:'ILEの発想をSEIが穏やかにサポートする'},
-    same:[
-      {name:'場を盛り上げ隊長', desc:'明るさを共有できる'},
-      {name:'理屈マスター', desc:'論理を柔らかく包んでくれる'}
-    ],
-    conflict:{name:'戦略プランナー', desc:'成果優先のLIEと柔らかいSEIはすれ違う'}
-  },
-  LSE:{
-    dual:{name:'夢見る共感者', desc:'IEIの感性をLSEの段取りで支える'},
-    same:[
-      {name:'お人好し仲裁役', desc:'調和を保ちながら現実性を持てる'},
-      {name:'マイペース職人', desc:'安定した進行を共有できる'}
-    ],
-    conflict:{name:'ドラマティック演出家', desc:'情熱的すぎるEIEと衝突しやすい'}
-  },
-  LSI:{
-    dual:{name:'ドラマティック演出家', desc:'EIEの情熱をLSIが秩序で支える'},
-    same:[
-      {name:'夢見る共感者', desc:'Betaクアドラで感情を共有できる'},
-      {name:'ゴーゴー行動派', desc:'勢いを持つ仲間'}
-    ],
-    conflict:{name:'アイデア冒険家', desc:'奔放なIEEにストレスを感じやすい'}
-  },
-  SLI:{
-    dual:{name:'アイデア冒険家', desc:'IEEの発想をSLIの堅実さで形にできる'},
-    same:[
-      {name:'段取りマネージャー', desc:'計画を安定させる仲間'},
-      {name:'お人好し仲裁役', desc:'人間関係重視で調和できる'}
-    ],
-    conflict:{name:'ドラマティック演出家', desc:'EIEの情熱を持て余しやすい'}
-  }
+  IEE:{dual:{name:'マイペース職人',desc:'落ち着きがIEEのアイデアを現実に定着させる'},
+       same:[{name:'段取りマネージャー',desc:'現実的視点で補完し合える'},{name:'お人好し仲裁役',desc:'人間関係重視で安心できる'}],
+       conflict:{name:'ルール番長',desc:'厳格さが自由奔放なIEEと衝突しやすい'}},
+  IEI:{dual:{name:'ゴーゴー行動派',desc:'行動力がIEIの夢想を現実に引き上げる'},
+       same:[{name:'ドラマティック演出家',desc:'Betaクアドラで共感・演出が噛み合う'},{name:'ルール番長',desc:'厳格さと感情表現の組合せで場を締める'}],
+       conflict:{name:'段取りマネージャー',desc:'計画重視で感情的なIEIと対立しやすい'}},
+  EIE:{dual:{name:'ルール番長',desc:'冷静で規律あるLSIがEIEの情熱を安定させる'},
+       same:[{name:'夢見る共感者',desc:'Betaクアドラで感情と未来を共に語れる'},{name:'ゴーゴー行動派',desc:'勢いあるSLEと一緒に盛り上げ役を担える'}],
+       conflict:{name:'マイペース職人',desc:'消極的なSLIとEIEの情熱は噛み合いにくい'}},
+  EII:{dual:{name:'カリスマ配信者',desc:'華やかなSEEがEIIの誠実さを引き出す'},
+       same:[{name:'段取りマネージャー',desc:'安定を大切にする仲間として相性が良い'},{name:'マイペース職人',desc:'落ち着いたSLIと互いに安心感を得られる'}],
+       conflict:{name:'ゴーゴー行動派',desc:'強引なSLEと衝突しやすい'}},
+  ILE:{dual:{name:'ゆるふわ癒し役',desc:'SEIの柔らかさがILEの発想を支える'},
+       same:[{name:'理屈マスター',desc:'理論でアイデアを整理してくれる'},{name:'場を盛り上げ隊長',desc:'明るさで発明を楽しく広げてくれる'}],
+       conflict:{name:'正義の番人',desc:'倫理観を重んじるESIと対立しやすい'}},
+  LII:{dual:{name:'場を盛り上げ隊長',desc:'社交的なESEがLIIの理屈を和らげる'},
+       same:[{name:'ひらめき発明家',desc:'自由な発想を理論で支える'},{name:'ゆるふわ癒し役',desc:'穏やかに理論を補完してくれる'}],
+       conflict:{name:'カリスマ配信者',desc:'華やかなSEEと現実的理屈が噛み合わない'}},
+  LIE:{dual:{name:'正義の番人',desc:'倫理観あるESIがLIEの戦略を安定させる'},
+       same:[{name:'未来予報士',desc:'長期的な視点を共有できる'},{name:'理屈マスター',desc:'論理を補完し合える参謀関係'}],
+       conflict:{name:'ゆるふわ癒し役',desc:'穏やかなSEIと成果志向のLIEはかみ合いにくい'}},
+  ILI:{dual:{name:'カリスマ配信者',desc:'SEEの行動力がILIの未来予測を実現に結びつける'},
+       same:[{name:'正義の番人',desc:'堅実さを共有できる'},{name:'戦略プランナー',desc:'成果志向を共に語れる'}],
+       conflict:{name:'場を盛り上げ隊長',desc:'明るいESEと慎重なILIは温度差が大きい'}},
+  ESE:{dual:{name:'理屈マスター',desc:'LIIの論理がESEの明るさを支える'},
+       same:[{name:'ひらめき発明家',desc:'新しい企画を楽しく広げられる'},{name:'ゆるふわ癒し役',desc:'安心感を与え合える'}],
+       conflict:{name:'未来予報士',desc:'慎重すぎるILIと勢いのESEはすれ違いやすい'}},
+  ESI:{dual:{name:'戦略プランナー',desc:'LIEの成果志向とESIの誠実さがかみ合う'},
+       same:[{name:'未来予報士',desc:'堅実さを共有できる'},{name:'理屈マスター',desc:'理論と倫理のバランスが良い'}],
+       conflict:{name:'ひらめき発明家',desc:'自由奔放なILEと衝突しやすい'}},
+  SEE:{dual:{name:'未来予報士',desc:'ILIの冷静な視点がSEEの情熱を補う'},
+       same:[{name:'正義の番人',desc:'道徳的視点で共感できる'},{name:'戦略プランナー',desc:'成果を重視する仲間'}],
+       conflict:{name:'理屈マスター',desc:'LIIの理屈に窮屈さを感じやすい'}},
+  SLE:{dual:{name:'夢見る共感者',desc:'IEIの感性がSLEの勢いを和らげる'},
+       same:[{name:'ドラマティック演出家',desc:'Betaクアドラの盛り上げ役仲間'},{name:'ルール番長',desc:'統率力を共有できる'}],
+       conflict:{name:'お人好し仲裁役',desc:'調和を重んじるEIIと衝突しやすい'}},
+  SEI:{dual:{name:'ひらめき発明家',desc:'ILEの発想をSEIが穏やかにサポートする'},
+       same:[{name:'場を盛り上げ隊長',desc:'明るさを共有できる'},{name:'理屈マスター',desc:'論理を柔らかく包んでくれる'}],
+       conflict:{name:'戦略プランナー',desc:'成果優先のLIEと柔らかいSEIはすれ違う'}},
+  LSE:{dual:{name:'夢見る共感者',desc:'IEIの感性をLSEの段取りで支える'},
+       same:[{name:'お人好し仲裁役',desc:'調和を保ちながら現実性を持てる'},{name:'マイペース職人',desc:'安定した進行を共有できる'}],
+       conflict:{name:'ドラマティック演出家',desc:'情熱的すぎるEIEと衝突しやすい'}},
+  LSI:{dual:{name:'ドラマティック演出家',desc:'EIEの情熱をLSIが秩序で支える'},
+       same:[{name:'夢見る共感者',desc:'Betaクアドラで感情を共有できる'},{name:'ゴーゴー行動派',desc:'勢いを持つ仲間'}],
+       conflict:{name:'アイデア冒険家',desc:'奔放なIEEにストレスを感じやすい'}},
+  SLI:{dual:{name:'アイデア冒険家',desc:'IEEの発想をSLIの堅実さで形にできる'},
+       same:[{name:'段取りマネージャー',desc:'計画を安定させる仲間'},{name:'お人好し仲裁役',desc:'人間関係重視で調和できる'}],
+       conflict:{name:'ドラマティック演出家',desc:'EIEの情熱を持て余しやすい'}},
 };
 
-/* ===================== タイプ詳細（全16タイプ＋Variants） ===================== */
+<script>
+/* ===================== タイプ詳細（全16タイプ・省略なし） ===================== */
 const DETAIL = {
   // --- IEI ---
   IEI: {
@@ -351,6 +275,7 @@ const DETAIL = {
       artist: "芸術的表現に長けた『アーティスト型』。"
     }
   },
+
   // --- IEE ---
   IEE: {
     intro: "人やアイデアを縦横無尽につなぐ冒険者。次々に新しい企画を生み出す存在です。",
@@ -364,6 +289,7 @@ const DETAIL = {
       catalyst: "場を変えるきっかけを作る『触媒型』。"
     }
   },
+
   // --- EIE ---
   EIE: {
     intro: "情熱を舞台に変える演出家。感情を操り、物語を演出するカリスマ性を持ちます。",
@@ -377,6 +303,7 @@ const DETAIL = {
       motivator: "人を奮い立たせる『モチベーター型』。"
     }
   },
+
   // --- EII ---
   EII: {
     intro: "誠実で温厚な仲裁役。人の気持ちを尊重し、調和を保つ橋渡し役です。",
@@ -390,6 +317,7 @@ const DETAIL = {
       guardian: "信頼を守り抜く『ガーディアン型』。"
     }
   },
+
   // --- ILE ---
   ILE: {
     intro: "自由奔放で好奇心旺盛な発明家。新しい可能性を見つけ出し、場に驚きを生みます。",
@@ -403,11 +331,12 @@ const DETAIL = {
       innovator: "未来志向の『イノベーター型』。"
     }
   },
+
   // --- LII ---
   LII: {
     intro: "冷静沈着な理屈の参謀。複雑な事象を分析・整理し、体系化する頭脳型タイプです。",
     strength: ["分析力","理論体系化","客観性","批判的思考","精度の高い計画"],
-    weak: ["感情に鈍感","頑固","細部に固執","空気を読みにくい","人間関係軽視"],
+    weak: ["感情に疎い","頑固","細部に固執","空気を読みにくい","人間関係軽視"],
     vtuber: ["解説配信","考察動画","検証企画"],
     role: "冷静参謀／まとめ役",
     variants: {
@@ -416,6 +345,7 @@ const DETAIL = {
       judge: "公平さを大切にする『ジャッジ型』。"
     }
   },
+
   // --- LIE ---
   LIE: {
     intro: "未来を見据え、成果を出すことに全力を注ぐ戦略家。",
@@ -429,6 +359,7 @@ const DETAIL = {
       commander: "突破力で導く『コマンダー型』。"
     }
   },
+
   // --- ILI ---
   ILI: {
     intro: "未来を予測し、慎重に動く観察者。冷静な洞察力でリスクを管理する賢者です。",
@@ -442,6 +373,7 @@ const DETAIL = {
       critic: "リスクを見抜く『クリティック型』。"
     }
   },
+
   // --- ESE ---
   ESE: {
     intro: "明るさと社交性で場を支配するエンターテイナー。",
@@ -455,6 +387,7 @@ const DETAIL = {
       spark: "空気を一変させる『スパーク型』。"
     }
   },
+
   // --- ESI ---
   ESI: {
     intro: "誠実さと倫理観で仲間を守る守護者。",
@@ -468,6 +401,7 @@ const DETAIL = {
       loyalist: "信頼を重んじる『ロイヤリスト型』。"
     }
   },
+
   // --- SEE ---
   SEE: {
     intro: "豪快で華やかなカリスマ。自信に満ちたパフォーマンスで人を魅了します。",
@@ -481,6 +415,7 @@ const DETAIL = {
       challenger: "挑戦を恐れない『チャレンジャー型』。"
     }
   },
+
   // --- SLE ---
   SLE: {
     intro: "勢いと突破力で状況を切り拓くアクションリーダー。",
@@ -494,6 +429,7 @@ const DETAIL = {
       enforcer: "押し進める『エンフォーサー型』。"
     }
   },
+
   // --- SEI ---
   SEI: {
     intro: "柔らかく穏やかな癒し手。居心地の良さを提供する存在です。",
@@ -507,6 +443,7 @@ const DETAIL = {
       comforter: "快適さを重視する『コンフォーター型』。"
     }
   },
+
   // --- LSE ---
   LSE: {
     intro: "現実的で計画的な段取り上手。安定進行に優れる。",
@@ -520,6 +457,7 @@ const DETAIL = {
       steward: "責任を重んじる『スチュワード型』。"
     }
   },
+
   // --- LSI ---
   LSI: {
     intro: "規律と正確さを重んじる監督役。",
@@ -533,6 +471,7 @@ const DETAIL = {
       tactical: "状況を読む『タクティカル型』。"
     }
   },
+
   // --- SLI ---
   SLI: {
     intro: "忍耐強くコツコツ積み上げる職人気質。安定した努力で成果を出すタイプ。",
@@ -548,7 +487,11 @@ const DETAIL = {
   }
 };
 
-/* ===================== TYPE_PROFILES ===================== */
+/* ===================== アルゴリズム & UI制御（完全版） ===================== */
+/* 依存: Q24, Q60, TYPES, REL, DETAIL がすでに定義済みであること */
+
+/* ---------- 参照プロファイル（軸ベクトル） ---------- */
+/* ※ 値は相対ベクトル（大きいほどその極に寄る）。軸: EI, NS, TF, JP */
 const TYPE_PROFILES = {
   IEI: {EI:-3, NS:+4, TF:-2, JP:-1},
   IEE: {EI:+3, NS:+3, TF:-1, JP:-2},
@@ -567,162 +510,224 @@ const TYPE_PROFILES = {
   LSI: {EI:-2, NS:-2, TF:+4, JP:+3},
   SLI: {EI:-4, NS:-3, TF:+1, JP:-1},
 };
-/* ===================== 統合アルゴリズム ===================== */
+
+/* ---------- 重み設定 ---------- */
 const WEIGHTS = {
   EI: 1.2,
   NS: 1.2,
   TF: 1.2,
   JP: 1.2,
-  functions: 1.5,
-  extra: 1.3
+  functions: 1.5,   // 機能(Ni/Ne/Si/Se/Ti/Te/Fi/Fe)の重み
+  correction: 1.15  // 機能補正係数ベース
 };
 
-
-/* 軸スコア算出 */
+/* ---------- 集計（軸 & 機能） ---------- */
 function computeAxes() {
   const ax = {EI:0, NS:0, TF:0, JP:0};
   const func = {Ni:0,Ne:0,Si:0,Se:0,Ti:0,Te:0,Fi:0,Fe:0};
-  const counts = {...ax, ...func};
+  const counts = {EI:0,NS:0,TF:0,JP:0,Ni:0,Ne:0,Si:0,Se:0,Ti:0,Te:0,Fi:0,Fe:0};
+
   current.forEach(q=>{
     const val = answers[q.id];
-    if(val!==undefined){
-      let w = WEIGHTS[q.axis] || WEIGHTS.functions;
-      if(ax.hasOwnProperty(q.axis)){ ax[q.axis]+=val*q.polarity*w; counts[q.axis]+=w; }
-      else if(func.hasOwnProperty(q.axis)){ func[q.axis]+=val*q.polarity*w; counts[q.axis]+=w; }
+    if(val===undefined) return;
+    if (ax.hasOwnProperty(q.axis)) {
+      const w = WEIGHTS[q.axis] || 1;
+      ax[q.axis] += val * q.polarity * w;
+      counts[q.axis] += w;
+    } else if (func.hasOwnProperty(q.axis)) {
+      const w = WEIGHTS.functions;
+      func[q.axis] += val * q.polarity * w;
+      counts[q.axis] += w;
+    } else if (q.axis === 'S') {
+      // 互換: Q60の一部で axis:'S' を使用（具体重視）
+      const w = WEIGHTS.NS;
+      ax.NS += val * q.polarity * w; // Sは+方向だが、NS軸の+はN。よってSは反転させる
+      counts.NS += w;
     }
   });
-  for(const k in ax) if(counts[k]>0) ax[k]/=counts[k];
-  for(const k in func) if(counts[k]>0) func[k]/=counts[k];
-  return {ax,func};
+
+  // 正規化
+  for (const k of Object.keys(ax)) if (counts[k]>0) ax[k] /= counts[k];
+  for (const k of Object.keys(func)) if (counts[k]>0) func[k] /= counts[k];
+
+  return {ax, func};
 }
 
-/* 軸方式タイプ判定 */
-function pickType({ax,func}){
-  function decideAxis(v,p,n){
-    if(v>1) return {[p]:1};
-    if(v<-1) return {[n]:1};
-    const prob=(v+1)/2;
-    return {[p]:prob,[n]:1-prob};
+/* ---------- 軸→MBTI確率合成 → ソシオニクス型マップ ---------- */
+function pickType({ax, func}) {
+  function decideAxis(v, pos, neg) {
+    // 強い確信域（±1超）では片側に寄せる
+    if (v > 1)  return {[pos]: 1};
+    if (v < -1) return {[neg]: 1};
+    // 中間域は線形確率
+    const prob = (v + 1) / 2; // v∈[-1,1] → [0,1]
+    return {[pos]: prob, [neg]: 1 - prob};
   }
-  const ei=decideAxis(ax.EI,"E","I");
-  const ns=decideAxis(ax.NS,"N","S");
-  const tf=decideAxis(ax.TF,"T","F");
-  const jp=decideAxis(ax.JP,"J","P");
-  const combos=[];
-  for(const e in ei)for(const n in ns)for(const t in tf)for(const j in jp)
-    combos.push({key:e+n+t+j,score:ei[e]*ns[n]*tf[t]*jp[j]});
-  const MAP={ENFP:'IEE',INFP:'IEI',ENFJ:'EIE',INFJ:'EII',ENTP:'ILE',INTJ:'LII',
-             ENTJ:'LIE',INTP:'ILI',ESFJ:'ESE',ISFJ:'ESI',ESFP:'SEE',ESTP:'SLE',
-             ISFP:'SEI',ESTJ:'LSE',ISTJ:'LSI',ISTP:'SLI'};
-  // 機能補正
-  if(func.Si>func.Ne){ combos.forEach(c=>{ if(c.key.includes("N"))c.score*=0.85; if(c.key.includes("S"))c.score*=1.15; }); }
-  if(func.Te>func.Fi){ combos.forEach(c=>{ if(c.key.includes("F"))c.score*=0.9; if(c.key.includes("T"))c.score*=1.1; }); }
-  const tally={};
-  combos.forEach(c=>{ const k=MAP[c.key]||"IEE"; tally[k]=(tally[k]||0)+c.score; });
-  return Object.entries(tally).map(([k,s])=>({key:k,score:s}));
-}
+  const ei = decideAxis(ax.EI, 'E','I');
+  const ns = decideAxis(ax.NS, 'N','S');
+  const tf = decideAxis(ax.TF, 'T','F');
+  const jp = decideAxis(ax.JP, 'J','P');
 
-/* ===================== ベクトル類似度診断 ===================== */
-function cosineSim(vec1, vec2){
-  let dot=0, norm1=0, norm2=0;
-  for(const k in vec1){
-    dot += (vec1[k]||0) * (vec2[k]||0);
-    norm1 += (vec1[k]||0)**2;
-    norm2 += (vec2[k]||0)**2;
+  // 全組み合わせ（16通り）
+  const combos = [];
+  for (const e in ei) for (const n in ns) for (const t in tf) for (const j in jp) {
+    combos.push({key: e+n+t+j, score: ei[e]*ns[n]*tf[t]*jp[j]});
   }
-  return dot / (Math.sqrt(norm1)*Math.sqrt(norm2)+1e-9);
+
+  // MBTI→ソシオニクス近似マップ
+  const MAP = {
+    ENFP:'IEE', INFP:'IEI', ENFJ:'EIE', INFJ:'EII',
+    ENTP:'ILE', INTJ:'LII', ENTJ:'LIE', INTP:'ILI',
+    ESFJ:'ESE', ISFJ:'ESI', ESFP:'SEE', ESTP:'SLE',
+    ISFP:'SEI', ESTJ:'LSE', ISTJ:'LSI', ISTP:'SLI'
+  };
+
+  // ---------- 機能補正（Ni/Se, Ne/Si, Ti/Fe, Te/Fi の相対を使う） ----------
+  // 強い側を強化、対極を減衰（スコアに乗算）
+  const c = WEIGHTS.correction;
+  const inv = 1/WEIGHTS.correction;
+
+  const boosts = [];
+  if (func.Ni - func.Se > 0.15) boosts.push({has:'N', lacks:'S'});
+  if (func.Se - func.Ni > 0.15) boosts.push({has:'S', lacks:'N'});
+
+  if (func.Ne - func.Si > 0.15) boosts.push({has:'N', lacks:'S'});
+  if (func.Si - func.Ne > 0.15) boosts.push({has:'S', lacks:'N'});
+
+  if (func.Ti - func.Fe > 0.15) boosts.push({has:'T', lacks:'F'});
+  if (func.Fe - func.Ti > 0.15) boosts.push({has:'F', lacks:'T'});
+
+  if (func.Te - func.Fi > 0.15) boosts.push({has:'T', lacks:'F'});
+  if (func.Fi - func.Te > 0.15) boosts.push({has:'F', lacks:'T'});
+
+  const combos2 = combos.map(cmb=>{
+    let s = cmb.score;
+    for (const b of boosts) {
+      if (cmb.key.includes(b.has))  s *= c;
+      if (cmb.key.includes(b.lacks)) s *= inv;
+    }
+    return {...cmb, score:s};
+  });
+
+  // MBTI→ Socionics tally
+  const tally = {};
+  for (const cmb of combos2) {
+    const soc = MAP[cmb.key] || 'IEE';
+    tally[soc] = (tally[soc] || 0) + cmb.score;
+  }
+  return Object.entries(tally).map(([key,score])=>({key,score}));
 }
 
-// 参考プロファイル（仮：より精度を上げるなら実データから学習）
-const TYPE_PROFILES = {
-  IEI: {EI:-3, NS:+4, TF:-2, JP:-1},
-  IEE: {EI:+3, NS:+3, TF:-1, JP:-2},
-  EIE: {EI:+4, NS:+2, TF:-3, JP:+1},
-  EII: {EI:-2, NS:+2, TF:-4, JP:+1},
-  ILE: {EI:+2, NS:+4, TF:+2, JP:-2},
-  LII: {EI:-3, NS:+3, TF:+4, JP:+2},
-  LIE: {EI:+1, NS:+3, TF:+4, JP:+3},
-  ILI: {EI:-4, NS:+4, TF:+3, JP:-2},
-  ESE: {EI:+4, NS:-1, TF:-3, JP:+2},
-  ESI: {EI:-2, NS:-1, TF:-4, JP:+3},
-  SEE: {EI:+4, NS:+1, TF:-2, JP:-3},
-  SLE: {EI:+4, NS:+1, TF:+2, JP:-3},
-  SEI: {EI:-3, NS:-2, TF:-2, JP:-2},
-  LSE: {EI:+1, NS:-1, TF:+3, JP:+4},
-  LSI: {EI:-2, NS:-2, TF:+4, JP:+3},
-  SLI: {EI:-4, NS:-3, TF:+1, JP:-1},
-};
+/* ---------- コサイン類似度 & ベクトル診断 ---------- */
+function cosineSim(v1, v2) {
+  let dot=0, n1=0, n2=0;
+  for (const k of Object.keys(v1)) {
+    const a = v1[k]||0, b = v2[k]||0;
+    dot += a*b; n1 += a*a; n2 += b*b;
+  }
+  return dot / (Math.sqrt(n1)*Math.sqrt(n2) + 1e-9);
+}
 
-function vectorDiagnosis(ax){
+function vectorDiagnosis(ax) {
   const sims = Object.keys(TYPE_PROFILES).map(k=>{
     const sim = cosineSim(ax, TYPE_PROFILES[k]);
-    return {key:k, score:sim};
+    return {key:k, score: sim};
   });
   return sims.sort((a,b)=>b.score-a.score);
 }
 
-/* ===================== 信頼度算出 ===================== */
-function computeConfidence(candidates){
-  if(candidates.length<2) return "Low";
-  const top = candidates[0].score;
-  const second = candidates[1].score;
-  const ratio = top / (top+second);
-  if(ratio>0.65) return "High";
-  if(ratio>0.55) return "Medium";
+/* ---------- 信頼度（上位2候補の比率） ---------- */
+function computeConfidence(candidates) {
+  if (candidates.length < 2) return "Low";
+  const [a,b] = candidates;
+  const ratio = a.score / (a.score + b.score + 1e-9);
+  if (ratio > 0.64) return "High";
+  if (ratio > 0.55) return "Medium";
   return "Low";
 }
 
-/* ===================== 統合ビルド ===================== */
-function buildResult(){
-  const {ax,func}=computeAxes();
-  const candAxis=pickType({ax,func});
-  const candVec=vectorDiagnosis(ax);
+/* ---------- 統合ビルド ---------- */
+function buildResult() {
+  const {ax, func} = computeAxes();
+  const candAxis = pickType({ax, func});
+  const candVec  = vectorDiagnosis(ax);
 
-  // スコアを正規化して合算（単純平均）
-  const tally={};
-  candAxis.forEach(c=>{ tally[c.key]=(tally[c.key]||0)+c.score; });
-  candVec.forEach(c=>{ tally[c.key]=(tally[c.key]||0)+c.score; });
+  // スコア合算（正規化は不要：相対比較用。単純加算）
+  const tally = {};
+  candAxis.forEach(c => { tally[c.key] = (tally[c.key]||0) + c.score; });
+  candVec.forEach(c  => { tally[c.key] = (tally[c.key]||0) + c.score; });
 
-  const candidates = Object.entries(tally).map(([k,s])=>({key:k,score:s}));
-  candidates.sort((a,b)=>b.score-a.score);
+  const candidates = Object.entries(tally).map(([key,score])=>({key,score}))
+                      .sort((a,b)=>b.score-a.score);
 
-  const top=candidates[0];
-  const t=TYPES[top.key], rel=REL[top.key], d=DETAIL[top.key];
-  const confidence=computeConfidence(candidates);
+  const topKey = candidates[0].key;
+  const t = TYPES[topKey], rel = REL[topKey], d = DETAIL[topKey];
+  const confidence = computeConfidence(candidates);
 
-  lastResult={t,rel,d,ax,func,tKey:top.key,candidates,confidence};
+  lastResult = { t, rel, d, ax, func, tKey: topKey, candidates, confidence };
+  // コピー用テキストを生成
+  const share =
+`【雲井鳴診断】
+あなたは「${t.name}」タイプ（${topKey}）
+
+${d.intro}
+
+🌟 強み
+- ${d.strength.join("\n- ")}
+
+⚠️ 弱み
+- ${d.weak.join("\n- ")}
+
+🤝 相性
+デュアル: ${rel.dual.name} — ${rel.dual.desc}
+同クアドラ:
+${rel.same.map(x=>"・"+x.name+" — "+x.desc).join("\n")}
+コンフリクト: ${rel.conflict.name} — ${rel.conflict.desc}
+
+📊 候補スコア（上位3）
+${candidates.slice(0,3).map(c=>`${c.key} ${(c.score*100).toFixed(1)}%`).join("\n")}
+
+🔒 信頼度: ${confidence}
+`;
+
+  const card = document.getElementById('resultCard');
+  card.dataset.share = share;
   renderResultView();
 }
 
-/* ===================== 結果描画 ===================== */
-  function renderResultView(){
-    if(!lastResult)return;
-    const {t,rel,d,tKey,candidates,confidence}=lastResult;
-    const html=[];
-    html.push(`<h2>あなたは <b>「${t.name}」</b> タイプ</h2>`);
-    html.push(`<p class="muted">(ソシオニクス表記: <b>${tKey}</b>)</p>`);
-    html.push(`<p>${d.intro}</p>`);
-    html.push(`<h3>🌟 強み</h3><ul>${d.strength.map(x=>`<li>${x}</li>`).join('')}</ul>`);
-    html.push(`<h3>⚠️ 弱み</h3><ul>${d.weak.map(x=>`<li>${x}</li>`).join('')}</ul>`);
-    html.push(`<h3>🤝 相性</h3><ul>
+/* ---------- 結果描画 ---------- */
+function renderResultView() {
+  if (!lastResult) return;
+  const { t, rel, d, tKey, candidates, confidence } = lastResult;
+  const html = [];
+
+  html.push(`<h2>あなたは <b>「${t.name}」</b> タイプ</h2>`);
+  html.push(`<p class="muted">(ソシオニクス表記: <b>${tKey}</b>)</p>`);
+  html.push(`<p>${d.intro}</p>`);
+  html.push(`<h3>🌟 強み</h3><ul>${d.strength.map(x=>`<li>${x}</li>`).join('')}</ul>`);
+  html.push(`<h3>⚠️ 弱み</h3><ul>${d.weak.map(x=>`<li>${x}</li>`).join('')}</ul>`);
+  html.push(`<h3>🤝 相性</h3>
+    <ul>
       <li><b>デュアル:</b> ${rel.dual.name} ― ${rel.dual.desc}</li>
       <li><b>同クアドラ:</b><br>${rel.same.map(x=>`・${x.name} ― ${x.desc}`).join("<br>")}</li>
       <li><b>コンフリクト:</b> ${rel.conflict.name} ― ${rel.conflict.desc}</li>
     </ul>`);
-    html.push(`<h3>📊 候補スコア</h3><ol>${candidates.slice(0,3).map(c=>`<li>${c.key} (${(c.score*100).toFixed(1)}%)</li>`).join("")}</ol>`);
-    html.push(`<h3>🔒 信頼度: ${confidence}</h3>`);
-    const card=document.getElementById("resultCard");
-    card.innerHTML=html.join(""); card.style.display="block";
-  }
-/* ===================== UI制御 ===================== */
+  html.push(`<h3>📊 候補スコア</h3><ol>${candidates.slice(0,3).map(c=>`<li>${c.key} (${(c.score*100).toFixed(1)}%)</li>`).join('')}</ol>`);
+  html.push(`<h3>🔒 信頼度: ${confidence}</h3>`);
+
+  const card = document.getElementById('resultCard');
+  card.innerHTML = html.join('');
+  card.style.display = 'block';
+}
+
+/* ---------- UI制御 ---------- */
 let current = [], answers = {}, lastResult = null;
 
-function setMode(mode){
-  current = (mode === "24") ? Q24 : Q60;
-  document.getElementById("modeLabel").textContent =
-    (mode === "24") ? "24問版（改良）" : "60問版（じっくり）";
+function setMode(mode) {
+  current = (mode === '24') ? Q24 : Q60;
+  document.getElementById('modeLabel').textContent = (mode === '24') ? '24問版（改良）' : '60問版（じっくり）';
   answers = {};
-  document.getElementById("questionCard").innerHTML = current.map((q,i)=>`
+  document.getElementById('questionCard').innerHTML = current.map((q,i)=>`
     <div class="q" id="${q.id}">
       <div class="qtitle">Q${i+1}. ${q.text}</div>
       <div class="slider">
@@ -731,52 +736,54 @@ function setMode(mode){
           oninput="answers['${q.id}']=Number(this.value);updateProgress()">
         <span>+5</span>
       </div>
-    </div>`).join('');
+    </div>
+  `).join('');
   updateProgress();
+  document.getElementById('resultCard').style.display = 'none';
+  document.getElementById('resultCard').dataset.share = '';
+  document.getElementById('warnMsg').textContent = '';
 }
 
-function updateProgress(){
+function updateProgress() {
   const answered = Object.keys(answers).length;
-  const progress = Math.round((answered / current.length) * 100);
-  document.getElementById("bar").style.width = progress + "%";
-  document.getElementById("count").textContent =
-    `${answered}/${current.length} 回答（${progress}%）`;
+  const total = current.length || 0;
+  const progress = total ? Math.round((answered/total)*100) : 0;
+  document.getElementById('bar').style.width = progress + '%';
+  document.getElementById('count').textContent = `${answered}/${total} 回答（${progress}%）`;
 }
 
-function tryShowResult(){
+function tryShowResult() {
   const unanswered = current.filter(q => answers[q.id] === undefined);
-  if(unanswered.length > 0){
-    document.getElementById('warnMsg').textContent =
-      `⚠ 未回答があります（残り ${unanswered.length} 問）`;
+  if (unanswered.length > 0) {
+    document.getElementById('warnMsg').textContent = `⚠ 未回答があります（残り ${unanswered.length} 問）`;
     return;
   }
-  document.getElementById('warnMsg').textContent = ""; // 警告をリセット
+  document.getElementById('warnMsg').textContent = '';
   buildResult();
 }
 
-function copyToClipboard(text){
+function copyToClipboard(text) {
   navigator.clipboard.writeText(text)
-    .then(()=>alert("結果をコピーしました！"))
-    .catch(()=>alert("コピーに失敗しました"));
+    .then(()=>alert('結果をコピーしました！'))
+    .catch(()=>alert('コピーに失敗しました'));
 }
 
-function init(){
-  document.getElementById('mode24').addEventListener('click',()=>setMode('24'));
-  document.getElementById('mode60').addEventListener('click',()=>setMode('60'));
+function init() {
+  document.getElementById('mode24').addEventListener('click', ()=>setMode('24'));
+  document.getElementById('mode60').addEventListener('click', ()=>setMode('60'));
   document.getElementById('calcBtn').addEventListener('click', tryShowResult);
-  document.getElementById('copyBtn').addEventListener('click',()=>{
+  document.getElementById('copyBtn').addEventListener('click', ()=>{
     const txt = document.getElementById('resultCard').dataset.share || '';
-    if(!txt){ alert('まず結果を表示してください。'); return; }
+    if (!txt) { alert('まず結果を表示してください。'); return; }
     copyToClipboard(txt);
   });
   setMode('24');
 }
 
 document.addEventListener('DOMContentLoaded', init);
+</script>
 
-  </script>
-</body>
-</html>
+
 
 
 
