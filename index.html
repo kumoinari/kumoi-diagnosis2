@@ -512,12 +512,22 @@ const TYPE_PROFILES = {
 
 /* ---------- 重み設定 ---------- */
 const WEIGHTS = {
-  EI: 1.2,
-  NS: 1.2,
-  TF: 1.2,
-  JP: 1.2,
-  functions: 1.5,   // 機能(Ni/Ne/Si/Se/Ti/Te/Fi/Fe)の重み
-  correction: 1.15  // 機能補正係数ベース
+  EI: 1.2,   // 軸質問（外向-内向）
+  NS: 1.2,   // 軸質問（直感-感覚）
+  TF: 1.2,   // 軸質問（論理-倫理）
+  JP: 1.2,   // 軸質問（計画性-柔軟性）
+  functions: 1.5,   // 機能質問（Ni/Ne/Si/Se/Ti/Te/Fi/Fe）
+  correction: 1.15  // 機能補正係数
+};
+
+/* ---------- 質問ごとの個別重み ---------- */
+/* 必要な質問だけ上書きして設定（なければ WEIGHTS[...] が使われる） */
+const QUESTION_WEIGHTS = {
+  q1: 2.0,   // 「初対面でも自分から話しかける」→ 外向性を強く示す
+  q6: 1.0,   // 「会議や集まりの後は疲れる」→ 効果を弱める
+  q17: 2.5,  // 「未来を必然の流れとして予感する」→ Niらしさ強い
+  q20: 2.0,  // 「緊張した場面で自然と主導権を握る」→ Seを強く示す
+  // …他にも必要に応じて追加
 };
 
 /* ---------- 集計（軸 & 機能） ---------- */
@@ -530,8 +540,8 @@ function computeAxes() {
     const val = answers[q.id];
     if(val===undefined) return;
     if (ax.hasOwnProperty(q.axis)) {
-      const w = WEIGHTS[q.axis] || 1;
-      ax[q.axis] += val * q.polarity * w;
+      const w = QUESTION_WEIGHTS[q.id] || WEIGHTS[q.axis] || 1;
+ax[q.axis] += val * q.polarity * w;
       counts[q.axis] += w;
     } else if (func.hasOwnProperty(q.axis)) {
       const w = WEIGHTS.functions;
@@ -780,6 +790,7 @@ function init() {
 
 document.addEventListener('DOMContentLoaded', init);
 </script>
+
 
 
 
