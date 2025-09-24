@@ -839,29 +839,24 @@ function computeAxes(){
   return ax;
 }
 
-/* ===================== タイプ判定 ===================== */
+/* ===================== タイプ判定（確率重み付き版） ===================== */
 function pickType(ax){
   function decideAxis(value, pos, neg){
-    if(value > 1) return pos;      // 明確にプラス寄り
-    else if(value < -1) return neg; // 明確にマイナス寄り
-    else return null;              // 中間ゾーン
+    if (value > 1) return pos;       // 明確にプラス寄り
+    else if (value < -1) return neg; // 明確にマイナス寄り
+    else {
+      // 中間ゾーン（-1～+1）はスコアに応じて確率判定
+      const prob = (value + 1) / 2; // -1 → 0.0, 0 → 0.5, +1 → 1.0
+      return Math.random() < prob ? pos : neg;
+    }
   }
 
-  const ei = decideAxis(ax.EI, 'E', 'I');
-  const ns = decideAxis(ax.NS, 'N', 'S');
-  const tf = decideAxis(ax.TF, 'T', 'F');
-  const jp = decideAxis(ax.JP, 'J', 'P');
+  const ei = decideAxis(ax.EI, "E", "I");
+  const ns = decideAxis(ax.NS, "N", "S");
+  const tf = decideAxis(ax.TF, "T", "F");
+  const jp = decideAxis(ax.JP, "J", "P");
 
-  // MBTIキーを組み立てる（中間は仮で最頻出に寄せる or "X"にする）
-  let mbtiKey = 
-    (ei || 'X') + 
-    (ns || 'X') + 
-    (tf || 'X') + 
-    (jp || 'X');
-
-  // 中間ゾーンがある場合の処理
-  // → ここでは便宜的に "X" を無視して最寄りのMBTIに寄せる簡易方式
-  mbtiKey = mbtiKey.replace(/X/g,'N'); // デフォルトはN寄り（調整可）
+  const mbtiKey = ei + ns + tf + jp;
 
   // MBTI → ソシオニクス対応表
   const map = {
@@ -946,4 +941,5 @@ document.addEventListener('DOMContentLoaded', init);
 </body>
 
 </html>
+
 
