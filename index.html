@@ -183,30 +183,30 @@
   </div>
   <!-- ===================== JavaScript部分 ===================== --> 
   <script>
-  /* ===================== 改良版 24問（バランス型） ===================== */
+  /* ===================== 改良版 24問（精選・最適化） ===================== */
 const Q24 = [
   // E/I（外向―内向）
   {id:'q1',  text:'初対面でも自分から話しかけることが多い。', axis:'EI', polarity:+1},
   {id:'q2',  text:'長時間の交流の後は、一人で休む時間が必要だ。', axis:'EI', polarity:-1},
   {id:'q3',  text:'人と一緒に過ごすとエネルギーが湧いてくる。', axis:'EI', polarity:+1},
-  {id:'q4',  text:'にぎやかな場所より落ち着いた空間が心地よい。', axis:'EI', polarity:-1},
+  {id:'q4',  text:'静かな環境で過ごす方が落ち着く。', axis:'EI', polarity:-1},
 
   // N/S（直感―感覚）
   {id:'q5',  text:'出来事の「先の展開」を想像しながら考える。', axis:'NS', polarity:+1}, // Ni
-  {id:'q6',  text:'体験や物の「手触り・匂い・音」に敏感だ。', axis:'NS', polarity:-1},   // Si
-  {id:'q7',  text:'一見無関係な事柄の中に共通点を見つけるのが得意だ。', axis:'NS', polarity:+1}, // Ne
-  {id:'q8',  text:'数字や具体的事実がないと落ち着かない。', axis:'NS', polarity:-1}, // S
+  {id:'q6',  text:'五感（匂い・音・手触り）に敏感だ。', axis:'NS', polarity:-1},         // Si
+  {id:'q7',  text:'無関係に見える事柄から関連を見出すことが得意だ。', axis:'NS', polarity:+1}, // Ne
+  {id:'q8',  text:'数字や具体的事実を重視しないと不安になる。', axis:'NS', polarity:-1},      // S
 
   // T/F（論理―倫理）
   {id:'q9',  text:'論理が破綻していると納得できない。', axis:'TF', polarity:+1}, // Ti
-  {id:'q10', text:'人を傷つけないよう表現に気を配る。', axis:'TF', polarity:-1}, // Fi
-  {id:'q11', text:'公平さやルールの整合性を優先する。', axis:'TF', polarity:+1}, // T
-  {id:'q12', text:'場の雰囲気や空気の変化に敏感だ。', axis:'TF', polarity:-1}, // Fe
+  {id:'q10', text:'公平さやルールの一貫性を優先する。', axis:'TF', polarity:+1}, // T
+  {id:'q11', text:'人を傷つけないよう表現に気を配る。', axis:'TF', polarity:-1}, // Fi
+  {id:'q12', text:'場の雰囲気や空気の変化に敏感だ。', axis:'TF', polarity:-1},   // Fe
 
   // J/P（計画性―柔軟性）
-  {id:'q13', text:'週の初めに予定を決めておくと安心する。', axis:'JP', polarity:+1},
-  {id:'q14', text:'新しい情報があれば計画をすぐに変えられる。', axis:'JP', polarity:-1},
-  {id:'q15', text:'締切は前倒しで終わらせたい。', axis:'JP', polarity:+1},
+  {id:'q13', text:'週の初めに予定を立てておくと安心する。', axis:'JP', polarity:+1},
+  {id:'q14', text:'締切は前倒しで終わらせたい。', axis:'JP', polarity:+1},
+  {id:'q15', text:'新しい情報が入れば計画をすぐに変えられる。', axis:'JP', polarity:-1},
   {id:'q16', text:'旅先ではその場の流れで動くのが楽しい。', axis:'JP', polarity:-1},
 
   // 機能系 Ni / Ne / Si / Se / Ti / Te / Fi / Fe
@@ -214,97 +214,87 @@ const Q24 = [
   {id:'q18', text:'アイデアを次々に思いつき、人に投げかけるのが好きだ。', axis:'Ne', polarity:+1},
   {id:'q19', text:'快適な環境（温度・音・光）がないと集中しにくい。', axis:'Si', polarity:+1},
   {id:'q20', text:'緊張した場面で自然と主導権を握ることがある。', axis:'Se', polarity:+1},
-  {id:'q21', text:'定義や概念をきちんと整理したくなる。', axis:'Ti', polarity:+1},
+  {id:'q21', text:'概念や定義をきちんと整理したくなる。', axis:'Ti', polarity:+1},
   {id:'q22', text:'効率的な仕組みを考えるのが得意だ。', axis:'Te', polarity:+1},
   {id:'q23', text:'相手の価値観を尊重して接することが大切だと思う。', axis:'Fi', polarity:+1},
   {id:'q24', text:'自分の感情表現が場の雰囲気を左右すると思う。', axis:'Fe', polarity:+1},
 ];
 
-/* ===================== 改良版 60問（精度強化） ===================== */
+/* ===================== 改良版 60問（精選・最適化） ===================== */
 const Q60 = [
-  // EI
-  {id:'q1', text:'予定のない休日、人と会う約束があると嬉しい。', axis:'EI', polarity:+1},
-  {id:'q2', text:'長時間の交流の後は一人で充電が必要だ。', axis:'EI', polarity:-1},
-  {id:'q3', text:'初対面でも積極的に話題を出す方だ。', axis:'EI', polarity:+1},
-  {id:'q4', text:'静かに過ごす方が自分らしさを保てる。', axis:'EI', polarity:-1},
-  {id:'q5', text:'大人数の雑談が楽しい。', axis:'EI', polarity:+1},
-  {id:'q6', text:'会議や集まりの後は休息を取りたい。', axis:'EI', polarity:-1},
+  // ===================== E/I（外向―内向） =====================
+  {id:'q1',  text:'予定のない休日、人と会う約束があると嬉しい。', axis:'EI', polarity:+1},
+  {id:'q2',  text:'長時間の交流の後は一人で休む時間が必要だ。', axis:'EI', polarity:-1},
+  {id:'q3',  text:'初対面でも積極的に話しかけられる。', axis:'EI', polarity:+1},
+  {id:'q4',  text:'静かに一人で過ごす方がエネルギーを回復できる。', axis:'EI', polarity:-1},
+  {id:'q5',  text:'大人数での雑談やイベントは楽しい。', axis:'EI', polarity:+1},
+  {id:'q6',  text:'会議や集まりの後はどっと疲れることが多い。', axis:'EI', polarity:-1},
 
-  // NS
-  {id:'q7', text:'出来事の背後にある流れや未来を考える。', axis:'Ni', polarity:+1},
-  {id:'q8', text:'新しいモノを見たら応用や未来像を想像する。', axis:'Ne', polarity:+1},
-  {id:'q9', text:'数字や事実の裏付けを重視する。', axis:'S', polarity:+1},
-  {id:'q10', text:'体感（匂い・温度・手触り）に敏感だ。', axis:'Si', polarity:+1},
-  {id:'q11', text:'バラバラの出来事に共通点を見出す。', axis:'Ne', polarity:+1},
+  // ===================== N/S（直感―感覚） =====================
+  {id:'q7',  text:'出来事の背後にある流れや未来を考えることが多い。', axis:'Ni', polarity:+1},
+  {id:'q8',  text:'新しいモノを見ると応用や未来像を想像する。', axis:'Ne', polarity:+1},
+  {id:'q9',  text:'数字や事実を根拠に判断するのを好む。', axis:'S', polarity:+1},
+  {id:'q10', text:'五感（匂い・温度・手触り）に敏感だ。', axis:'Si', polarity:+1},
+  {id:'q11', text:'無関係に見える事柄から関連性を見出すのが得意だ。', axis:'Ne', polarity:+1},
   {id:'q12', text:'「未来の必然性」を直感的に感じることがある。', axis:'Ni', polarity:+1},
-  {id:'q13', text:'道具やデザインの細部が気になる。', axis:'Si', polarity:+1},
-  {id:'q14', text:'環境の変化（音・光）で気分が変わる。', axis:'Si', polarity:+1},
+  {id:'q13', text:'デザインや道具の細部にこだわる。', axis:'Si', polarity:+1},
+  {id:'q14', text:'環境の変化（音・光）で気分が大きく変わる。', axis:'Si', polarity:+1},
 
-  // TF
+  // ===================== T/F（論理―倫理） =====================
   {id:'q15', text:'議論では論理の整合性を最優先する。', axis:'Ti', polarity:+1},
-  {id:'q16', text:'正確なフィードバックを重視する。', axis:'Te', polarity:+1},
+  {id:'q16', text:'効率や成果を重視して判断する。', axis:'Te', polarity:+1},
   {id:'q17', text:'人の気持ちを大切にして結論を出す。', axis:'Fi', polarity:+1},
-  {id:'q18', text:'雰囲気に合わせて行動を変えることが多い。', axis:'Fe', polarity:+1},
-  {id:'q19', text:'原因分析を優先する。', axis:'Ti', polarity:+1},
-  {id:'q20', text:'効率や成果を強く意識する。', axis:'Te', polarity:+1},
-  {id:'q21', text:'仲間の価値観を尊重したい。', axis:'Fi', polarity:+1},
-  {id:'q22', text:'自分の感情表現で場を動かそうとする。', axis:'Fe', polarity:+1},
+  {id:'q18', text:'場の雰囲気に合わせて行動を変える。', axis:'Fe', polarity:+1},
+  {id:'q19', text:'原因を徹底的に分析する。', axis:'Ti', polarity:+1},
+  {id:'q20', text:'数値で成果を測ることを好む。', axis:'Te', polarity:+1},
+  {id:'q21', text:'仲間の価値観を尊重して対応する。', axis:'Fi', polarity:+1},
+  {id:'q22', text:'自分の感情表現で場を盛り上げる。', axis:'Fe', polarity:+1},
 
-  // JP
+  // ===================== J/P（計画性―柔軟性） =====================
   {id:'q23', text:'週の初めに予定が埋まっていると安心する。', axis:'JP', polarity:+1},
   {id:'q24', text:'締切は前倒しで終わらせたい。', axis:'JP', polarity:+1},
   {id:'q25', text:'旅は行き当たりばったりで決めたい。', axis:'JP', polarity:-1},
   {id:'q26', text:'直前に計画を変えても平気だ。', axis:'JP', polarity:-1},
-  {id:'q27', text:'机やファイルを体系的に整理したい。', axis:'JP', polarity:+1},
-  {id:'q28', text:'自由度を確保した方が安心する。', axis:'JP', polarity:-1},
-  {id:'q29', text:'ToDoは優先度順に並べることが多い。', axis:'JP', polarity:+1},
-  {id:'q30', text:'予定は柔軟に動かせる方がいい。', axis:'JP', polarity:-1},
+  {id:'q27', text:'机やファイルを体系的に整理するのが好きだ。', axis:'JP', polarity:+1},
+  {id:'q28', text:'予定は柔軟に動かせる方が安心する。', axis:'JP', polarity:-1},
+  {id:'q29', text:'ToDoを優先度順に並べることが多い。', axis:'JP', polarity:+1},
+  {id:'q30', text:'計画をあまり細かく決めずに進めたい。', axis:'JP', polarity:-1},
 
-  // 機能強化 Ni/Ne/Si/Se/Ti/Te/Fi/Fe
-  {id:'q31', text:'長期的な視点で物事を考える。', axis:'Ni', polarity:+1},
+  // ===================== 機能強化 Ni/Ne/Si/Se/Ti/Te/Fi/Fe =====================
+  {id:'q31', text:'長期的な視点で物事を考えることが多い。', axis:'Ni', polarity:+1},
   {id:'q32', text:'未来のビジョンを語るのが得意だ。', axis:'Ni', polarity:+1},
-  {id:'q33', text:'思いついたアイデアを広げるのが好きだ。', axis:'Ne', polarity:+1},
-  {id:'q34', text:'新しい可能性を人に提示することが多い。', axis:'Ne', polarity:+1},
-  {id:'q35', text:'居心地の良い環境がないと集中できない。', axis:'Si', polarity:+1},
-  {id:'q36', text:'体調や快適さに敏感だ。', axis:'Si', polarity:+1},
-  {id:'q37', text:'プレッシャーの場面で主導権を握る。', axis:'Se', polarity:+1},
+  {id:'q33', text:'思いついたアイデアを次々広げていく。', axis:'Ne', polarity:+1},
+  {id:'q34', text:'新しい可能性を人に提示するのが好きだ。', axis:'Ne', polarity:+1},
+  {id:'q35', text:'快適さや居心地を重視して行動する。', axis:'Si', polarity:+1},
+  {id:'q36', text:'体調やコンディションに敏感だ。', axis:'Si', polarity:+1},
+  {id:'q37', text:'プレッシャーの場面で自然と主導権を握る。', axis:'Se', polarity:+1},
   {id:'q38', text:'対立場面で強気に出やすい。', axis:'Se', polarity:+1},
-  {id:'q39', text:'理屈や定義が曖昧だと落ち着かない。', axis:'Ti', polarity:+1},
-  {id:'q40', text:'仕組みを整理して理解するのが得意だ。', axis:'Ti', polarity:+1},
-  {id:'q41', text:'効率化の方法を考えるのが好きだ。', axis:'Te', polarity:+1},
+  {id:'q39', text:'理屈や定義が曖昧だと気になる。', axis:'Ti', polarity:+1},
+  {id:'q40', text:'仕組みを整理して理解するのが得意。', axis:'Ti', polarity:+1},
+  {id:'q41', text:'効率化の方法を考えるのが好き。', axis:'Te', polarity:+1},
   {id:'q42', text:'成果や数値で評価されたい。', axis:'Te', polarity:+1},
-  {id:'q43', text:'人との距離感を強く意識する。', axis:'Fi', polarity:+1},
+  {id:'q43', text:'人との距離感を大事にする。', axis:'Fi', polarity:+1},
   {id:'q44', text:'相手の価値観を尊重して判断する。', axis:'Fi', polarity:+1},
   {id:'q45', text:'場を盛り上げると自分も楽しくなる。', axis:'Fe', polarity:+1},
   {id:'q46', text:'感情を共有して雰囲気を高めたい。', axis:'Fe', polarity:+1},
 
-  // 補助
-  {id:'q47', text:'ルールの一貫性に強い関心を持つ。', axis:'Ti', polarity:+1},
-  {id:'q48', text:'未来より現在の感覚を重視する。', axis:'Si', polarity:+1},
-  {id:'q49', text:'相手のモチベーションに影響を受けやすい。', axis:'Fe', polarity:+1},
-  {id:'q50', text:'相手の弱点を見抜いて対応することが多い。', axis:'Se', polarity:+1},
-  {id:'q51', text:'抽象的な理論より具体的な実績を信頼する。', axis:'Te', polarity:+1},
+  // ===================== 補助・差別化用 =====================
+  {id:'q47', text:'ルールの一貫性に強くこだわる。', axis:'Ti', polarity:+1},
+  {id:'q48', text:'今この瞬間の感覚を大切にする。', axis:'Si', polarity:+1},
+  {id:'q49', text:'周囲のモチベーションに影響されやすい。', axis:'Fe', polarity:+1},
+  {id:'q50', text:'相手の弱点をすぐに見抜いてしまう。', axis:'Se', polarity:+1},
+  {id:'q51', text:'抽象的な理論より具体的な実績を信じる。', axis:'Te', polarity:+1},
   {id:'q52', text:'相手の信念や価値観を尊重する。', axis:'Fi', polarity:+1},
+  {id:'q53', text:'未来よりも現在を楽しむ方が大切だ。', axis:'Si', polarity:+1},
+  {id:'q54', text:'困難な場面でリーダーシップを発揮しやすい。', axis:'Se', polarity:+1},
+  {id:'q55', text:'抽象理論を深く考えるのが好き。', axis:'Ti', polarity:+1},
+  {id:'q56', text:'効率を求めてシステムを改善するのが得意。', axis:'Te', polarity:+1},
+  {id:'q57', text:'人間関係の中で信念を大事にする。', axis:'Fi', polarity:+1},
+  {id:'q58', text:'雰囲気を読んで行動することが多い。', axis:'Fe', polarity:+1},
+  {id:'q59', text:'新しいことに挑戦して刺激を求める。', axis:'Ne', polarity:+1},
+  {id:'q60', text:'一つの未来像に集中して考え込む。', axis:'Ni', polarity:+1},
 ];
-/* ===================== タイプ定義 ===================== */
-const TYPES = {
-  IEE:{name:'アイデア冒険家', cluster:'アイデアマン型', perspective:'アイデア視点', quadra:'Delta'},
-  IEI:{name:'夢見る共感者', cluster:'夢語り型', perspective:'ドラマティック視点', quadra:'Beta'},
-  EIE:{name:'ドラマティック演出家', cluster:'盛り上げ役型', perspective:'ドラマティック視点', quadra:'Beta'},
-  EII:{name:'お人好し仲裁役', cluster:'癒し型', perspective:'調和視点', quadra:'Delta'},
-  ILE:{name:'ひらめき発明家', cluster:'アイデアマン型', perspective:'アイデア視点', quadra:'Alpha'},
-  LII:{name:'理屈マスター', cluster:'参謀型', perspective:'ルール視点', quadra:'Alpha'},
-  LIE:{name:'戦略プランナー', cluster:'参謀型', perspective:'アイデア視点', quadra:'Gamma'},
-  ILI:{name:'未来予報士', cluster:'夢語り型', perspective:'ルール視点', quadra:'Gamma'},
-  ESE:{name:'場を盛り上げ隊長', cluster:'ムードメーカー型', perspective:'主役視点', quadra:'Alpha'},
-  ESI:{name:'正義の番人', cluster:'守り役型', perspective:'ルール視点', quadra:'Gamma'},
-  SEE:{name:'カリスマ配信者', cluster:'ムードメーカー型', perspective:'主役視点', quadra:'Gamma'},
-  SLE:{name:'ゴーゴー行動派', cluster:'盛り上げ役型', perspective:'主役視点', quadra:'Beta'},
-  SEI:{name:'ゆるふわ癒し役', cluster:'癒し型', perspective:'調和視点', quadra:'Alpha'},
-  LSE:{name:'段取りマネージャー', cluster:'段取り型', perspective:'ルール視点', quadra:'Delta'},
-  LSI:{name:'ルール番長', cluster:'段取り型', perspective:'ルール視点', quadra:'Beta'},
-  SLI:{name:'マイペース職人', cluster:'守り役型', perspective:'調和視点', quadra:'Delta'},
-};
+
 /* ===================== 相性（デュアル/同クアドラ/コンフリクト） ===================== */
 const REL = {
   IEE:{dual:'マイペース職人', same:['段取りマネージャー','お人好し仲裁役'], conflict:'ルール番長'},
@@ -706,6 +696,7 @@ function renderResultView(){
   </script>
 </body>
 </html>
+
 
 
 
