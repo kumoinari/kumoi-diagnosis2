@@ -758,21 +758,39 @@ function renderResultView(){
   html.push(`<p>${d.role}</p>`);
   if (d.explainRole) html.push(`<p>${d.explainRole}</p>`);
 
-  // 軸スコア（数値＋日本語補足）
-  function explainAxis(label, value){
-    if(value > 3) return `${label}：+${value.toFixed(1)}（かなり${label}寄り）`;
-    if(value > 1) return `${label}：+${value.toFixed(1)}（やや${label}寄り）`;
-    if(value < -3) return `${label}：${value.toFixed(1)}（かなり逆側寄り）`;
-    if(value < -1) return `${label}：${value.toFixed(1)}（やや逆側寄り）`;
-    return `${label}：${value.toFixed(1)}（中間）`;
+/* ===================== 軸スコア計算（重み付き版） ===================== */
+function computeAxes(){
+  const ax = {EI:0, NS:0, TF:0, JP:0};
+  let counts = {EI:0, NS:0, TF:0, JP:0};
+
+  current.forEach(q=>{
+    const val = answers[q.id];
+    if(val !== undefined){
+      // 重みを設定
+      let weight = 1.0;
+      if(q.axis === 'EI') weight = 1.5;
+      if(q.axis === 'NS') weight = 1.3;
+      if(q.axis === 'TF') weight = 1.3;
+      if(q.axis === 'JP') weight = 1.0;
+      // 機能系は特に重視
+      if(['Ni','Ne','Si','Se','Ti','Te','Fi','Fe'].includes(q.axis)) weight = 1.6;
+
+      if(ax.hasOwnProperty(q.axis)){
+        ax[q.axis] += val * q.polarity * weight;
+        counts[q.axis] += weight;
+      }
+    }
+  });
+
+  // 平均化
+  for(const k in ax){
+    if(counts[k] > 0){
+      ax[k] = ax[k] / counts[k];
+    }
   }
-  html.push(`<h3>📊 軸スコア</h3>`);
-  html.push(`<p>
-    ${explainAxis("E/I", ax.EI)}<br>
-    ${explainAxis("N/S", ax.NS)}<br>
-    ${explainAxis("T/F", ax.TF)}<br>
-    ${explainAxis("J/P", ax.JP)}
-  </p>`);
+  return ax;
+}
+
 
   // 結果をカードに反映
   const card = document.getElementById('resultCard');
@@ -941,5 +959,6 @@ document.addEventListener('DOMContentLoaded', init);
 </body>
 
 </html>
+
 
 
