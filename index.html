@@ -523,22 +523,24 @@ const WEIGHTS = {
 /* ---------- 質問ごとの個別重み ---------- */
 /* 必要な質問だけ上書きして設定（なければ WEIGHTS[...] が使われる） */
 const QUESTION_WEIGHTS = {
-  q1: 2.0,   // 「初対面でも自分から話しかける」→ 外向性を強く示す
-  q6: 1.0,   // 「会議や集まりの後は疲れる」→ 効果を弱める
-  q17: 2.5,  // 「未来を必然の流れとして予感する」→ Niらしさ強い
-  q20: 2.0,  // 「緊張した場面で自然と主導権を握る」→ Seを強く示す
-  // …他にも必要に応じて追加
+  q1: 2.0,   // 外向性をよく表す
+  q6: 0.8,   // 効果は弱め
+  q17: 2.5,  // Niらしさが強い
+  q20: 2.0,  // Seらしさが強い
+  q12: 1.8,  // 雰囲気に敏感 → Feっぽさ強い
+  // ...分析結果で更新可能
 };
 // ▼ ファジィ変換関数
 function fuzzy(val) {
-  const range = 5; // スライダーの最大値（-5〜+5）
-  const norm = val / range; // -1〜+1 に正規化
+  const range = 5;
+  const norm = val / range; // -1〜+1
 
-  const degreeYes     = Math.max(0, norm);   // 正の度合い
-  const degreeNo      = Math.max(0, -norm);  // 負の度合い
-  const degreeNeutral = 1 - Math.abs(norm);  // 中立度
+  // ガウス関数
+  const yes = norm > 0 ? Math.exp(-Math.pow(norm-1,2)/0.5) : 0;
+  const no  = norm < 0 ? Math.exp(-Math.pow(norm+1,2)/0.5) : 0;
+  const neutral = Math.exp(-Math.pow(norm,2)/0.2);
 
-  return {yes: degreeYes, no: degreeNo, neutral: degreeNeutral};
+  return {yes, no, neutral};
 }
 
 /* ---------- 集計（軸 & 機能） ---------- */
@@ -587,13 +589,12 @@ function computeAxes() {
 /* ---------- 軸→MBTI確率合成 → ソシオニクス型マップ ---------- */
 function pickType({ax, func}) {
   function decideAxis(v, pos, neg) {
-    // 強い確信域（±1超）では片側に寄せる
     if (v > 1)  return {[pos]: 1};
     if (v < -1) return {[neg]: 1};
-    // 中間域は線形確率
-    const prob = (v + 1) / 2; // v∈[-1,1] → [0,1]
+    const prob = (v + 1) / 2;
     return {[pos]: prob, [neg]: 1 - prob};
   }
+
   const ei = decideAxis(ax.EI, 'E','I');
   const ns = decideAxis(ax.NS, 'N','S');
   const tf = decideAxis(ax.TF, 'T','F');
@@ -613,21 +614,25 @@ function pickType({ax, func}) {
     ISFP:'SEI', ESTJ:'LSE', ISTJ:'LSI', ISTP:'SLI'
   };
 
-  // ---------- 機能補正（Ni/Se, Ne/Si, Ti/Fe, Te/Fi の相対を使う） ----------
-  // 強い側を強化、対極を減衰（スコアに乗算）
+  // ▼ タイプの人口分布（事前確率）
+  const PRIOR = {
+    IEE: 0.07, IEI: 0.04, EIE: 0.03, EII: 0.04,
+    ILE: 0.06, LII: 0.04, LIE: 0.03, ILI: 0.03,
+    ESE: 0.09, ESI: 0.07, SEE: 0.08, SLE: 0.06,
+    SEI: 0.08, LSE: 0.06, LSI: 0.08, SLI: 0.04
+  };
+
+  // ---------- 機能補正 ----------
   const c = WEIGHTS.correction;
-  const inv = 1/WEIGHTS.correction;
+  const inv = 1 / WEIGHTS.correction;
 
   const boosts = [];
   if (func.Ni - func.Se > 0.15) boosts.push({has:'N', lacks:'S'});
   if (func.Se - func.Ni > 0.15) boosts.push({has:'S', lacks:'N'});
-
   if (func.Ne - func.Si > 0.15) boosts.push({has:'N', lacks:'S'});
   if (func.Si - func.Ne > 0.15) boosts.push({has:'S', lacks:'N'});
-
   if (func.Ti - func.Fe > 0.15) boosts.push({has:'T', lacks:'F'});
   if (func.Fe - func.Ti > 0.15) boosts.push({has:'F', lacks:'T'});
-
   if (func.Te - func.Fi > 0.15) boosts.push({has:'T', lacks:'F'});
   if (func.Fi - func.Te > 0.15) boosts.push({has:'F', lacks:'T'});
 
@@ -640,12 +645,14 @@ function pickType({ax, func}) {
     return {...cmb, score:s};
   });
 
-  // MBTI→ Socionics tally
+  // ---------- ベイズ補正付き tally ----------
   const tally = {};
   for (const cmb of combos2) {
     const soc = MAP[cmb.key] || 'IEE';
-    tally[soc] = (tally[soc] || 0) + cmb.score;
+    const prior = PRIOR[soc] || 0.05;
+    tally[soc] = (tally[soc] || 0) + cmb.score * prior;
   }
+
   return Object.entries(tally).map(([key,score])=>({key,score}));
 }
 
@@ -683,19 +690,27 @@ function buildResult() {
   const candAxis = pickType({ax, func});
   const candVec  = vectorDiagnosis(ax);
 
-  // スコア合算（正規化は不要：相対比較用。単純加算）
+  // スコア合算（正規化は不要：相対比較用）
   const tally = {};
   candAxis.forEach(c => { tally[c.key] = (tally[c.key]||0) + c.score; });
   candVec.forEach(c  => { tally[c.key] = (tally[c.key]||0) + c.score; });
 
-  const candidates = Object.entries(tally).map(([key,score])=>({key,score}))
-                      .sort((a,b)=>b.score-a.score);
+  const candidates = Object.entries(tally)
+    .map(([key,score])=>({key,score}))
+    .sort((a,b)=>b.score-a.score);
 
   const topKey = candidates[0].key;
   const t = TYPES[topKey], rel = REL[topKey], d = DETAIL[topKey];
   const confidence = computeConfidence(candidates);
 
-  lastResult = { t, rel, d, ax, func, tKey: topKey, candidates, confidence };
+  // ▼ エントロピー計算（不確実性指標）
+  const entropy = computeEntropy(candidates);
+
+  lastResult = { 
+    t, rel, d, ax, func, tKey: topKey, 
+    candidates, confidence, entropy 
+  };
+
   // コピー用テキストを生成
   const share =
 `【雲井鳴診断】
@@ -719,6 +734,7 @@ ${rel.same.map(x=>"・"+x.name+" — "+x.desc).join("\n")}
 ${candidates.slice(0,3).map(c=>`${c.key} ${(c.score*100).toFixed(1)}%`).join("\n")}
 
 🔒 信頼度: ${confidence}
+🌀 エントロピー: ${entropy.toFixed(2)}
 `;
 
   const card = document.getElementById('resultCard');
@@ -729,26 +745,57 @@ ${candidates.slice(0,3).map(c=>`${c.key} ${(c.score*100).toFixed(1)}%`).join("\n
 /* ---------- 結果描画 ---------- */
 function renderResultView() {
   if (!lastResult) return;
-  const { t, rel, d, tKey, candidates, confidence } = lastResult;
+  const { t, rel, d, tKey, candidates, confidence, entropy } = lastResult;
   const html = [];
 
   html.push(`<h2>あなたは <b>「${t.name}」</b> タイプ</h2>`);
   html.push(`<p class="muted">(ソシオニクス表記: <b>${tKey}</b>)</p>`);
   html.push(`<p>${d.intro}</p>`);
+
   html.push(`<h3>🌟 強み</h3><ul>${d.strength.map(x=>`<li>${x}</li>`).join('')}</ul>`);
   html.push(`<h3>⚠️ 弱み</h3><ul>${d.weak.map(x=>`<li>${x}</li>`).join('')}</ul>`);
+
   html.push(`<h3>🤝 相性</h3>
     <ul>
       <li><b>デュアル:</b> ${rel.dual.name} ― ${rel.dual.desc}</li>
       <li><b>同クアドラ:</b><br>${rel.same.map(x=>`・${x.name} ― ${x.desc}`).join("<br>")}</li>
       <li><b>コンフリクト:</b> ${rel.conflict.name} ― ${rel.conflict.desc}</li>
     </ul>`);
-  html.push(`<h3>📊 候補スコア</h3><ol>${candidates.slice(0,3).map(c=>`<li>${c.key} (${(c.score*100).toFixed(1)}%)</li>`).join('')}</ol>`);
+
+  // 候補スコア上位3リスト
+  html.push(`<h3>📊 候補スコア</h3>
+    <ol>${candidates.slice(0,3).map(c=>
+      `<li>${c.key} (${(c.score*100).toFixed(1)}%)</li>`).join('')}</ol>`);
+
+  // 候補分布を棒グラフで表示（上位5）
+  html.push(`<h3>📊 候補分布</h3><div style="padding:8px;">` +
+    candidates.slice(0,5).map(c=>{
+      const pct = (c.score*100).toFixed(1);
+      return `<div style="margin-bottom:6px;">${c.key}: ${pct}%
+        <div style="height:6px;background:#e5e7eb;border-radius:3px;">
+          <div style="width:${pct}%;height:6px;background:var(--brand);"></div>
+        </div>
+      </div>`;
+    }).join('') + `</div>`);
+
   html.push(`<h3>🔒 信頼度: ${confidence}</h3>`);
+  html.push(`<h3>🌀 エントロピー（不確実性）: ${entropy.toFixed(2)}</h3>`);
 
   const card = document.getElementById('resultCard');
   card.innerHTML = html.join('');
   card.style.display = 'block';
+}
+
+/* ---------- エントロピー計算関数 ---------- */
+function computeEntropy(candidates) {
+  const total = candidates.reduce((s,c)=>s+c.score,0);
+  if (total <= 0) return 0;
+  let H = 0;
+  for (const c of candidates) {
+    const p = c.score / total;
+    if (p > 0) H -= p * Math.log2(p);
+  }
+  return H;
 }
 
 /* ---------- UI制御 ---------- */
@@ -813,6 +860,7 @@ function init() {
 
 document.addEventListener('DOMContentLoaded', init);
 </script>
+
 
 
 
