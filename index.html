@@ -523,24 +523,27 @@ const WEIGHTS = {
 /* ---------- 質問ごとの個別重み ---------- */
 /* 必要な質問だけ上書きして設定（なければ WEIGHTS[...] が使われる） */
 const QUESTION_WEIGHTS = {
-  q1: 2.0,   // 外向性をよく表す
-  q6: 0.8,   // 効果は弱め
-  q17: 2.5,  // Niらしさが強い
-  q20: 2.0,  // Seらしさが強い
-  q12: 1.8,  // 雰囲気に敏感 → Feっぽさ強い
-  // ...分析結果で更新可能
+  q1: 2.0,   // 「初対面でも自分から話しかける」→ 外向性を強く示す
+  q6: 1.0,   // 「会議や集まりの後は疲れる」→ 効果を弱める
+  q17: 2.5,  // 「未来を必然の流れとして予感する」→ Niらしさ強い
+  q20: 2.0,  // 「緊張した場面で自然と主導権を握る」→ Seを強く示す
+  // …他にも必要に応じて追加
 };
-// ▼ ファジィ変換関数
+
+/* ---------- シグモイド型ファジィ変換関数 ---------- */
 function fuzzy(val) {
-  const range = 5;
-  const norm = val / range; // -1〜+1
+  const range = 5; 
+  const norm = val / range; // -1〜+1 に正規化
 
-  // ガウス関数
-  const yes = norm > 0 ? Math.exp(-Math.pow(norm-1,2)/0.5) : 0;
-  const no  = norm < 0 ? Math.exp(-Math.pow(norm+1,2)/0.5) : 0;
-  const neutral = Math.exp(-Math.pow(norm,2)/0.2);
+  // シグモイド関数でスムーズに寄与度を決定
+  const sigmoid = x => 1 / (1 + Math.exp(-6 * x)); // 勾配6は調整可
 
-  return {yes, no, neutral};
+  // シグモイド出力は [0,1] なので 0.5 を中心にずらして使う
+  const degreeYes = Math.max(0, sigmoid(norm) - 0.5) * 2; // 正寄与
+  const degreeNo = Math.max(0, 0.5 - sigmoid(norm)) * 2; // 負寄与
+  const degreeNeutral = 1 - Math.abs(norm); // 中立度（0〜1）
+
+  return {yes: degreeYes, no: degreeNo, neutral: degreeNeutral};
 }
 
 /* ---------- 集計（軸 & 機能） ---------- */
@@ -553,17 +556,15 @@ function computeAxes() {
     const val = answers[q.id];
     if(val===undefined) return;
 
-    // ▼ ファジィ変換
     const fz = fuzzy(val);
 
     if (ax.hasOwnProperty(q.axis)) {
       const w = QUESTION_WEIGHTS[q.id] || WEIGHTS[q.axis] || 1;
 
-      // polarity が +1 → yesがプラス寄与、noがマイナス寄与
-      // polarity が -1 → 逆になる
+      // yes/no の寄与
       ax[q.axis] += (fz.yes - fz.no) * q.polarity * w;
 
-      // neutralは弱めに寄与（調整可：0.1を変更）
+      // neutral は弱めに寄与
       ax[q.axis] += fz.neutral * 0.1 * q.polarity * w;
 
       counts[q.axis] += w;
@@ -583,6 +584,13 @@ function computeAxes() {
   // 正規化
   for (const k of Object.keys(ax)) if (counts[k]>0) ax[k] /= counts[k];
   for (const k of Object.keys(func)) if (counts[k]>0) func[k] /= counts[k];
+
+  // ▼ 回答一貫性チェック（軸が中立寄り＝ブレが大きい → 信頼度下げる）
+  for (const k of Object.keys(ax)) {
+    if (Math.abs(ax[k]) < 0.3) { // ±0.3未満なら弱い傾向
+      ax[k] *= 0.8; // スコア縮小
+    }
+  }
 
   return {ax, func};
 }
@@ -860,6 +868,7 @@ function init() {
 
 document.addEventListener('DOMContentLoaded', init);
 </script>
+
 
 
 
