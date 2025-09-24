@@ -216,110 +216,110 @@
   <script>
 
 /* ===================== 質問リスト ===================== */
-/* ===================== 改良版 24問（信頼性UP版） ===================== */
+/* ===================== 改良版 24問（各軸均等） ===================== */
 const Q24 = [
   // E/I（外向―内向）
-  {id:'q1',  text:'週末に予定が空いていると「人と会いたい」と感じることが多い。', axis:'EI', polarity:+1},
-  {id:'q2',  text:'大人数での雑談より、1〜2人での会話の方が安心する。', axis:'EI', polarity:-1},
-  {id:'q3',  text:'新しいグループや場に入っても、すぐに自分から話しかけられる。', axis:'EI', polarity:+1},
-  {id:'q4',  text:'数時間の交流後は、1人の時間を持たないと疲れる。', axis:'EI', polarity:-1},
-  {id:'q5',  text:'初対面の人と会話すると、むしろエネルギーが湧いてくる。', axis:'EI', polarity:+1},
-  {id:'q6',  text:'長時間の会議や飲み会では、途中で静かに抜けたくなる。', axis:'EI', polarity:-1},
+  {id:'q1', text:'予定のない休日、人と会う約束が入ると元気が出る。', axis:'EI', polarity:+1},
+  {id:'q2', text:'初対面でも自分から話しかける方だ。', axis:'EI', polarity:+1},
+  {id:'q3', text:'数時間の交流後は一人の時間で充電したくなる。', axis:'EI', polarity:-1},
+  {id:'q4', text:'沈黙が続くと話題を出したくなる。', axis:'EI', polarity:+1},
+  {id:'q5', text:'長時間の社交の後はどっと疲れる。', axis:'EI', polarity:-1},
+  {id:'q6', text:'大人数よりも少人数の場が心地よい。', axis:'EI', polarity:-1},
 
   // N/S（直感―感覚）
-  {id:'q7',  text:'話を聞くとき「この先どうなるか」を想像しながら聞いている。', axis:'NS', polarity:+1},
-  {id:'q8',  text:'旅行計画を立てるとき、体験のテーマを重視することが多い。', axis:'NS', polarity:+1},
-  {id:'q9',  text:'新しいモノを見ると「今後の応用や未来像」を思いつきやすい。', axis:'NS', polarity:+1},
-  {id:'q10', text:'五感（音・匂い・手触り）での心地よさに敏感だ。', axis:'NS', polarity:-1},
-  {id:'q11', text:'数字や事実の裏付けがないと安心できない。', axis:'NS', polarity:-1},
-  {id:'q12', text:'一見バラバラな出来事の中に「共通点やつながり」を探すのが好きだ。', axis:'NS', polarity:+1},
+  {id:'q7', text:'会話の中で「未来の展開」を想像することが多い。', axis:'NS', polarity:+1},
+  {id:'q8', text:'新しいアイデアや可能性を考えるのが好きだ。', axis:'NS', polarity:+1},
+  {id:'q9', text:'五感（音・匂い・触感）に敏感で気分が左右される。', axis:'NS', polarity:-1},
+  {id:'q10', text:'具体的な数字や事実がないと安心できない。', axis:'NS', polarity:-1},
+  {id:'q11', text:'道具やUIの手触りやデザインが気になる。', axis:'NS', polarity:-1},
+  {id:'q12', text:'一見バラバラな出来事の中に共通点を探すのが得意だ。', axis:'NS', polarity:+1},
 
   // T/F（論理―感情）
-  {id:'q13', text:'意見がぶつかったときは、まず根拠やルールを確認したい。', axis:'TF', polarity:+1},
-  {id:'q14', text:'誰かの失敗を見たとき、原因分析を優先することが多い。', axis:'TF', polarity:+1},
-  {id:'q15', text:'フィードバックは正確さが最優先で、多少きつくても構わない。', axis:'TF', polarity:+1},
-  {id:'q16', text:'会議では結論の妥当性よりも当事者の気持ちの納得を重視する。', axis:'TF', polarity:-1},
-  {id:'q17', text:'人を傷つけそうな正論は、言い回しを工夫して伝える。', axis:'TF', polarity:-1},
-  {id:'q18', text:'チームの空気や雰囲気の変化に敏感である。', axis:'TF', polarity:-1},
+  {id:'q13', text:'意見の対立ではまず根拠やルールを確認したい。', axis:'TF', polarity:+1},
+  {id:'q14', text:'失敗を見たとき、原因分析を優先する。', axis:'TF', polarity:+1},
+  {id:'q15', text:'会議では結論より当事者の気持ちを重視する。', axis:'TF', polarity:-1},
+  {id:'q16', text:'人を傷つけそうな正論は言い方を工夫する。', axis:'TF', polarity:-1},
+  {id:'q17', text:'チームの空気の変化に敏感だ。', axis:'TF', polarity:-1},
+  {id:'q18', text:'論拠が弱い合意は長続きしないと感じる。', axis:'TF', polarity:+1},
 
   // J/P（計画性―柔軟性）
-  {id:'q19', text:'週の初めに予定がある程度埋まっていると安心できる。', axis:'JP', polarity:+1},
-  {id:'q20', text:'締切があるときは前倒しで進めて余白を作りたい。', axis:'JP', polarity:+1},
-  {id:'q21', text:'旅先では行き当たりばったりで動く方が楽しい。', axis:'JP', polarity:-1},
-  {id:'q22', text:'直前に良いアイデアが出たら計画を変えることに抵抗がない。', axis:'JP', polarity:-1},
-  {id:'q23', text:'机やフォルダは用途ごとに整理しておきたい。', axis:'JP', polarity:+1},
-  {id:'q24', text:'予定はあえて空白を残し、自由度を確保したい。', axis:'JP', polarity:-1},
+  {id:'q19', text:'週の初めに予定が埋まっていると安心する。', axis:'JP', polarity:+1},
+  {id:'q20', text:'締切は前倒しで進めて余裕を作りたい。', axis:'JP', polarity:+1},
+  {id:'q21', text:'旅先では行き当たりばったりが楽しい。', axis:'JP', polarity:-1},
+  {id:'q22', text:'新しい情報があれば直前でも計画を変えられる。', axis:'JP', polarity:-1},
+  {id:'q23', text:'机やフォルダは体系的に整理したい。', axis:'JP', polarity:+1},
+  {id:'q24', text:'予定は空白を残して自由度を確保したい。', axis:'JP', polarity:-1},
 ];
 
-
-/* 60問版（詳細・改良済み） */
+/* ===================== 改良版 60問（各軸均等） ===================== */
 const Q60 = [
-  // EI
-  {id:'q1', text:'予定のない休日、人と会う約束が入るとむしろ元気が出る。', axis:'EI', polarity:+1},
-  {id:'q2', text:'会議後は大人数と雑談するとエネルギーが回復することがある。', axis:'EI', polarity:+1},
-  {id:'q3', text:'初対面の場でも、自分から話題を切り出すことが多い。', axis:'EI', polarity:+1},
-  {id:'q4', text:'重要な決断は、まず頭の中で整理してから口に出す方だ。', axis:'EI', polarity:-1},
-  {id:'q5', text:'長時間の社交の後は、一人の時間で充電しないとしんどい。', axis:'EI', polarity:-1},
-  {id:'q6', text:'沈黙が続くと自分から話題を投入したくなる。', axis:'EI', polarity:+1},
-  // NS
-  {id:'q7', text:'会話の中で「この先こういう展開もあるかも」と想像することが多い。', axis:'NS', polarity:+1},
-  {id:'q8', text:'旅行計画は持ち物や手順より“体験のテーマ”から考える。', axis:'NS', polarity:+1},
-  {id:'q9', text:'新製品を見ると今後の応用や未来像を想像するのが好きだ。', axis:'NS', polarity:+1},
-  {id:'q10', text:'作業では手触り・匂い・音など五感の心地よさを重視する。', axis:'NS', polarity:-1},
-  {id:'q11', text:'抽象的なたとえ話よりも具体例や数値の方が腹落ちする。', axis:'NS', polarity:-1},
-  {id:'q12', text:'一見バラバラな出来事の中に「共通点やつながり」を見つけるのが好きだ。', axis:'NS', polarity:+1},
-  {id:'q13', text:'道具やUIの触り心地に敏感で良し悪しが気になる。', axis:'NS', polarity:-1},
-  {id:'q14', text:'環境の音や匂い、明るさの快・不快で気分や集中力が変わる。', axis:'NS', polarity:-1},
-  // TF
-  {id:'q15', text:'意見の対立では、まず根拠やルールの整合性を確認したい。', axis:'TF', polarity:+1},
-  {id:'q16', text:'誰かの失敗に直面すると、感情より原因分析が先になりがちだ。', axis:'TF', polarity:+1},
-  {id:'q17', text:'フィードバックは正確さが最優先で多少きつくても構わない。', axis:'TF', polarity:+1},
-  {id:'q18', text:'物事の判断で、その場の人間関係の雰囲気を強く考慮する。', axis:'TF', polarity:-1},
-  {id:'q19', text:'会議では結論の妥当性より当事者の気持ちの納得を重視する。', axis:'TF', polarity:-1},
-  {id:'q20', text:'論拠が弱い合意は長続きしないと感じる。', axis:'TF', polarity:+1},
-  {id:'q21', text:'人を傷つけそうな正論は言い回しを工夫する。', axis:'TF', polarity:-1},
-  {id:'q22', text:'チームの空気や温度感の変化に敏感だ。', axis:'TF', polarity:-1},
-  // JP
-  {id:'q23', text:'週の初めに、ざっくりでも予定が埋まっていると安心できる。', axis:'JP', polarity:+1},
-  {id:'q24', text:'締切があるときは前倒しで進めて“余白”を作りたい。', axis:'JP', polarity:+1},
-  {id:'q25', text:'旅先では行き当たりばったりで気分次第に動くのが好きだ。', axis:'JP', polarity:-1},
-  {id:'q26', text:'直前により良い案が出たら計画を大きく変えることに抵抗がない。', axis:'JP', polarity:-1},
-  {id:'q27', text:'机やフォルダは用途ごとに体系的に整理しておきたい。', axis:'JP', polarity:+1},
-  {id:'q28', text:'ToDoは期限と優先度で整理しておきたい。', axis:'JP', polarity:+1},
-  {id:'q29', text:'新情報が入れば方針変更もスピーディに行う。', axis:'JP', polarity:-1},
-  {id:'q30', text:'予定は空白を残して自由度を確保したい。', axis:'JP', polarity:-1},
-  // Elements Ni/Ne/Si/Se/Ti/Te/Fi/Fe
-  {id:'q31', text:'目の前の出来事から「未来の展開」を予測してしまうことが多い。', axis:'Ni', polarity:+1},
-  {id:'q32', text:'出来事を「始まりから今、そしてこれから」に結びつけて考える。', axis:'Ni', polarity:+1},
-  {id:'q33', text:'物事を見たとき「こんな展開もあるかも」と次々に思いつく。', axis:'Ne', polarity:+1},
-  {id:'q34', text:'誰かの隠れた才能や可能性を発見するのが得意だ。', axis:'Ne', polarity:+1},
-  {id:'q35', text:'部屋の明るさや温度が少し違うだけで集中力が変わる。', axis:'Si', polarity:+1},
-  {id:'q36', text:'美味しい食事や心地よい環境に強く幸せを感じる。', axis:'Si', polarity:+1},
-  {id:'q37', text:'場の主導権を握らないと落ち着かないことがある。', axis:'Se', polarity:+1},
-  {id:'q38', text:'相手が押しに弱いと感じたら、自然とこちらがリードしてしまう。', axis:'Se', polarity:+1},
-  {id:'q39', text:'言葉やルールの定義が曖昧だとモヤモヤする。', axis:'Ti', polarity:+1},
-  {id:'q40', text:'複雑な仕組みを整理して理解するのが好きだ。', axis:'Ti', polarity:+1},
-  {id:'q41', text:'数字や実績など「結果ベースの話」があると安心できる。', axis:'Te', polarity:+1},
-  {id:'q42', text:'効率的に動ける仕組みを考えるのが得意だ。', axis:'Te', polarity:+1},
-  {id:'q43', text:'誰かとの関係の「近さや距離感」を敏感に意識している。', axis:'Fi', polarity:+1},
-  {id:'q44', text:'相手の価値観や信念を尊重することを大切にしている。', axis:'Fi', polarity:+1},
-  {id:'q45', text:'集まりで場が盛り上がると、自分も自然とテンションが上がる。', axis:'Fe', polarity:+1},
-  {id:'q46', text:'空気が沈むと「なんとか盛り上げたい」と感じる。', axis:'Fe', polarity:+1},
-  // 補助12
-  {id:'q47', text:'企画では“コンセプト”を最初に固めたい。', axis:'NS', polarity:+1},
-  {id:'q48', text:'厳しめのフィードバックでも役立つなら歓迎される。', axis:'TF', polarity:+1},
-  {id:'q49', text:'旅先では現地の気分や天気で予定を決めることが多い。', axis:'JP', polarity:-1},
-  {id:'q50', text:'朝のルーティンが整っていると安心できる。', axis:'JP', polarity:+1},
-  {id:'q51', text:'複数案件を同時に回すための仕組み化が好きだ。', axis:'JP', polarity:+1},
-  {id:'q52', text:'新しい体験をするとき、まず「雰囲気」を大事にする。', axis:'Fi', polarity:+1},
-  {id:'q53', text:'相手の価値観や背景を理解してから結論を出したい。', axis:'Fi', polarity:+1},
-  {id:'q54', text:'熱意やモチベーションはパフォーマンスに直結すると考える。', axis:'Fe', polarity:+1},
-  {id:'q55', text:'想像の中で「まだ起きていない場面」を鮮明に描くことがある。', axis:'Ni', polarity:+1},
-  {id:'q56', text:'成果が数字で見えるとやる気が出る。', axis:'Te', polarity:+1},
-  {id:'q57', text:'仲間が楽しそうにしていると、自分も自然と楽しくなる。', axis:'Fe', polarity:+1},
-  {id:'q58', text:'「ルールが守られているか」が気になる。', axis:'Ti', polarity:+1},
-  {id:'q59', text:'人と話すより、一人で考える時間の方がアイデアが出ることがある。', axis:'EI', polarity:-1},
-  {id:'q60', text:'自由度よりも秩序や安定を優先したい。', axis:'JP', polarity:+1},
+  // E/I（外向―内向）15問
+  {id:'q1', text:'予定が入るとむしろ元気になる。', axis:'EI', polarity:+1},
+  {id:'q2', text:'大人数との雑談はエネルギーを与えてくれる。', axis:'EI', polarity:+1},
+  {id:'q3', text:'初対面でも自分から話題を出すことが多い。', axis:'EI', polarity:+1},
+  {id:'q4', text:'重要な決断はまず頭の中で整理してから話す。', axis:'EI', polarity:-1},
+  {id:'q5', text:'長時間の社交後は一人の時間で回復する。', axis:'EI', polarity:-1},
+  {id:'q6', text:'沈黙が続くと話題を出したくなる。', axis:'EI', polarity:+1},
+  {id:'q7', text:'数時間の交流後はかなり疲れる。', axis:'EI', polarity:-1},
+  {id:'q8', text:'仲間と過ごすことで活力が湧く。', axis:'EI', polarity:+1},
+  {id:'q9', text:'人前で話すとき自然に盛り上げ役になる。', axis:'EI', polarity:+1},
+  {id:'q10', text:'初対面より慣れた人と過ごす方が楽だ。', axis:'EI', polarity:-1},
+  {id:'q11', text:'一人の時間がないとストレスが溜まる。', axis:'EI', polarity:-1},
+  {id:'q12', text:'雑談の場にいると楽しくなる。', axis:'EI', polarity:+1},
+  {id:'q13', text:'会話の後はどっと疲れることが多い。', axis:'EI', polarity:-1},
+  {id:'q14', text:'大勢の輪の中に自然に入れる。', axis:'EI', polarity:+1},
+  {id:'q15', text:'静かな環境の方が落ち着く。', axis:'EI', polarity:-1},
+
+  // N/S（直感―感覚）15問
+  {id:'q16', text:'会話で未来の展開を想像する。', axis:'NS', polarity:+1},
+  {id:'q17', text:'旅行計画は体験テーマから考える。', axis:'NS', polarity:+1},
+  {id:'q18', text:'新製品を見ると応用を考える。', axis:'NS', polarity:+1},
+  {id:'q19', text:'五感の心地よさに敏感。', axis:'NS', polarity:-1},
+  {id:'q20', text:'数字や具体例がないと不安。', axis:'NS', polarity:-1},
+  {id:'q21', text:'バラバラな出来事に共通点を見出す。', axis:'NS', polarity:+1},
+  {id:'q22', text:'道具やUIの触感や見た目を気にする。', axis:'NS', polarity:-1},
+  {id:'q23', text:'環境の音や匂いで気分が変わる。', axis:'NS', polarity:-1},
+  {id:'q24', text:'未来像や可能性を語るのが好きだ。', axis:'NS', polarity:+1},
+  {id:'q25', text:'抽象より具体的な話が分かりやすい。', axis:'NS', polarity:-1},
+  {id:'q26', text:'創造的な発想が次々に浮かぶ。', axis:'NS', polarity:+1},
+  {id:'q27', text:'日常の小さな変化に敏感だ。', axis:'NS', polarity:-1},
+  {id:'q28', text:'長期的な未来を考えることが多い。', axis:'NS', polarity:+1},
+  {id:'q29', text:'デザインや質感が直感的に気になる。', axis:'NS', polarity:-1},
+  {id:'q30', text:'偶然の出来事に意味を見出す。', axis:'NS', polarity:+1},
+
+  // T/F（論理―感情）15問
+  {id:'q31', text:'意見の対立では根拠を確認したい。', axis:'TF', polarity:+1},
+  {id:'q32', text:'失敗を見たとき原因分析を優先する。', axis:'TF', polarity:+1},
+  {id:'q33', text:'フィードバックは正確さを優先する。', axis:'TF', polarity:+1},
+  {id:'q34', text:'結論よりも気持ちの納得を重視する。', axis:'TF', polarity:-1},
+  {id:'q35', text:'正論も言い方を工夫して伝える。', axis:'TF', polarity:-1},
+  {id:'q36', text:'チームの空気の変化に敏感だ。', axis:'TF', polarity:-1},
+  {id:'q37', text:'論理の穴に気づくと気になる。', axis:'TF', polarity:+1},
+  {id:'q38', text:'相手の気持ちを最優先する。', axis:'TF', polarity:-1},
+  {id:'q39', text:'論拠が弱い合意は納得できない。', axis:'TF', polarity:+1},
+  {id:'q40', text:'共感よりも正確さを優先する。', axis:'TF', polarity:+1},
+  {id:'q41', text:'雰囲気が悪いと気になって集中できない。', axis:'TF', polarity:-1},
+  {id:'q42', text:'ルールを守らないとモヤモヤする。', axis:'TF', polarity:+1},
+  {id:'q43', text:'人間関係の調和を崩したくない。', axis:'TF', polarity:-1},
+  {id:'q44', text:'筋の通らない話は納得できない。', axis:'TF', polarity:+1},
+  {id:'q45', text:'相手の立場を考えて発言を変える。', axis:'TF', polarity:-1},
+
+  // J/P（計画性―柔軟性）15問
+  {id:'q46', text:'予定が埋まっていると安心する。', axis:'JP', polarity:+1},
+  {id:'q47', text:'締切は前倒しで進めたい。', axis:'JP', polarity:+1},
+  {id:'q48', text:'旅先では気分で動くのが好き。', axis:'JP', polarity:-1},
+  {id:'q49', text:'直前でも計画を変えられる。', axis:'JP', polarity:-1},
+  {id:'q50', text:'机やフォルダを整理整頓したい。', axis:'JP', polarity:+1},
+  {id:'q51', text:'予定は空白を残したい。', axis:'JP', polarity:-1},
+  {id:'q52', text:'ToDoを期限で整理する。', axis:'JP', polarity:+1},
+  {id:'q53', text:'新しい情報があればすぐ変更する。', axis:'JP', polarity:-1},
+  {id:'q54', text:'ルーティンが整っていると安心する。', axis:'JP', polarity:+1},
+  {id:'q55', text:'計画よりも直感を優先する。', axis:'JP', polarity:-1},
+  {id:'q56', text:'複数案件を同時進行できる仕組みが好き。', axis:'JP', polarity:+1},
+  {id:'q57', text:'予定に縛られるのは苦手だ。', axis:'JP', polarity:-1},
+  {id:'q58', text:'計画を立てて動くと安心する。', axis:'JP', polarity:+1},
+  {id:'q59', text:'行き当たりばったりを楽しめる。', axis:'JP', polarity:-1},
+  {id:'q60', text:'秩序や安定を優先したい。', axis:'JP', polarity:+1},
 ];
 
 /* ===================== タイプ定義 ===================== */
@@ -928,4 +928,5 @@ function init(){
 document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
+
 </html>
