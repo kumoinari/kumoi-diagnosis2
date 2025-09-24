@@ -9,132 +9,33 @@
       --bg: linear-gradient(180deg,#f6f9ff,#ffffff);
       --fg: #0f172a;
       --muted: #475569;
-      --brand: #8f82bc;   /* 紫 */
-      --accent: #6ec5ff;  /* 水色 */
+      --brand: #8f82bc;
+      --accent: #6ec5ff;
       --card: #ffffff;
       --border: #e2e8f0;
       --warn: #dc2626;
     }
-    * { box-sizing: border-box }
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      color: var(--fg);
-      background: var(--bg);
-      line-height: 1.6;
-    }
+    body { margin: 0; font-family: system-ui; background: var(--bg); color: var(--fg); }
     .wrap { max-width: 920px; margin: 0 auto; padding: 16px 16px 96px }
-    header {
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-      justify-content: space-between;
-      margin: 12px 0 20px;
-    }
-    h1 {
-      font-size: 28px;
-      font-weight: 800;
-      background: linear-gradient(90deg, var(--brand), var(--accent));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin: 0 0 6px;
-    }
+    header { display: flex; justify-content: space-between; margin: 12px 0 20px; }
+    h1 { font-size: 28px; font-weight: 800; background: linear-gradient(90deg,var(--brand),var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin:0 0 6px;}
     .muted { color: var(--muted); font-size: 13px }
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      box-shadow: 0 6px 18px rgba(15,23,42,0.08);
-      overflow: hidden;
-    }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; box-shadow: 0 6px 18px rgba(15,23,42,0.08);}
     .card.pad { padding: 20px }
-    .title { font-size: 16px; font-weight: 700; margin: 0 0 6px }
-    .progress { height: 10px; background: #e5e7eb; border-radius: 999px; overflow: hidden }
-    .progress > div {
-      height: 100%;
-      background: linear-gradient(90deg, var(--brand), var(--accent));
-      width: 0%;
-      transition: width 0.3s ease;
-    }
-    .q { padding: 16px 18px; border-top: 1px solid var(--border) }
-    .q:first-child { border-top: none }
-    .qtitle { font-size: 15px; margin: 0 0 12px; line-height: 1.6 }
-    .slider { display: flex; align-items: center; gap: 8px }
-    input[type=range] {
-      width: 100%;
-      height: 36px;
-      accent-color: var(--brand);
-    }
-    .btn {
-      appearance: none;
-      border: none;
-      background: var(--brand);
-      color: #fff;
-      padding: 10px 16px;
-      border-radius: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .btn:hover { opacity: 0.9 }
-    .btn.ghost {
-      background: #fff;
-      color: var(--brand);
-      border: 1px solid var(--brand);
-    }
-    .btn.ghost:hover { background: #f1f5f9 }
-    .footer {
-      position: fixed;
-      left: 0; right: 0; bottom: 0;
-      background: rgba(255,255,255,0.98);
-      border-top: 1px solid var(--border);
-      backdrop-filter: saturate(180%) blur(10px);
-    }
-    .footer .inner {
-      max-width: 920px;
-      margin: 0 auto;
-      padding: 10px 16px;
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .result {
-      padding: 24px;
-      border-radius: 18px;
-      background: #fff;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-      line-height: 1.7;
-    }
-    .result h2 { font-size: 24px; margin: 0 0 12px; }
-    .result h3 { margin-top: 18px; font-size: 18px; border-left: 4px solid var(--brand); padding-left: 8px; }
-    .badge {
-      display: inline-block;
-      background: #eef2ff;
-      color: #3730a3;
-      padding: 4px 8px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      margin-right: 6px;
-    }
-    .result ul li::before { content: "✔ "; color: var(--brand); font-weight: bold; }
-    ul { margin: 6px 0 10px 20px }
-    .disclaimer { font-size: 12px; color: var(--muted) }
-    .warn {
-      color: var(--warn);
-      background: #fee2e2;
-      padding: 10px 14px;
-      border-radius: 10px;
-      margin-top: 10px;
-      font-weight: 600;
-    }
-    #progressCard {
-      position: sticky; top: 0; z-index: 50;
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    }
+    .progress { height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden }
+    .progress>div { height:100%;background:linear-gradient(90deg,var(--brand),var(--accent));width:0%;transition:width .3s ease }
+    .q { padding:16px 18px; border-top:1px solid var(--border) }
+    .q:first-child { border-top:none }
+    .slider { display:flex;align-items:center;gap:8px }
+    input[type=range]{width:100%;height:36px;accent-color:var(--brand);}
+    .btn{border:none;background:var(--brand);color:#fff;padding:10px 16px;border-radius:12px;font-weight:700;cursor:pointer;}
+    .btn.ghost{background:#fff;color:var(--brand);border:1px solid var(--brand);}
+    .footer{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,0.98);border-top:1px solid var(--border);}
+    .footer .inner{max-width:920px;margin:0 auto;padding:10px 16px;display:flex;justify-content:space-between;}
+    .result{padding:24px;border-radius:18px;background:#fff;box-shadow:0 8px 20px rgba(0,0,0,0.1);}
+    .result h2{font-size:24px;margin:0 0 12px;}
+    .result h3{margin-top:18px;font-size:18px;border-left:4px solid var(--brand);padding-left:8px;}
+    .warn{color:var(--warn);background:#fee2e2;padding:10px 14px;border-radius:10px;margin-top:10px;font-weight:600;}
   </style>
 </head>
 <body>
@@ -142,45 +43,30 @@
     <header>
       <div>
         <h1>雲井鳴診断（24問/60問・日本語ポップ版）</h1>
-        <div class="muted">
-          日常の質問に答えるだけで、あなたの立ち位置と相性がわかる診断です。回答はブラウザ内のみで処理されます。
-        </div>
+        <div class="muted">日常の質問に答えるだけで診断できます。回答はブラウザ内のみで処理されます。</div>
       </div>
-      <div class="row">
-        <button class="btn ghost" id="mode24">24問版（改良）</button>
-        <button class="btn" id="mode60">60問版（じっくり）</button>
+      <div>
+        <button class="btn ghost" id="mode24">24問版</button>
+        <button class="btn" id="mode60">60問版</button>
       </div>
     </header>
-
-    <section class="card pad" style="margin:12px 0; background:#f8fafc; border-left:5px solid var(--brand);">
-      <div class="title">⚠️ ご案内</div>
-      <div class="disclaimer" style="font-size:14px; line-height:1.6;">
-        本診断はユング心理学系タイプ論およびソシオニクス理論に「着想を得て」雲井鳴が再設計したオリジナル診断です。<br>
-        公式のソシオニクス/MBTI/16Personalities等とは関係がありません。<br>
-        回答はブラウザ内で完結し、サーバ送信はされません。
-      </div>
-    </section>
-
     <section id="progressCard" class="card pad">
       <div class="progress"><div id="bar"></div></div>
-      <div id="count" class="muted" style="margin-top:6px;">0/0 回答（0%）</div>
+      <div id="count" class="muted">0/0 回答（0%）</div>
     </section>
-
     <section id="questionCard" class="card" style="margin-top:16px;"></section>
     <section id="resultCard" class="result" style="display:none; margin-top:20px;"></section>
     <div id="warnMsg" class="warn"></div>
   </div>
-
   <div class="footer">
     <div class="inner">
-      <span id="modeLabel">24問版（改良）</span>
+      <span id="modeLabel">24問版</span>
       <div>
         <button id="calcBtn" class="btn">診断する</button>
         <button id="copyBtn" class="btn ghost">結果をコピー</button>
       </div>
     </div>
   </div>
-
  <!-- ===================== JavaScript部分 ===================== -->
   <script>
  /* ===================== 改良版 24問（精選・最適化） ===================== */
@@ -881,6 +767,7 @@ function renderResultView(){
   </script>
 </body>
 </html>
+
 
 
 
